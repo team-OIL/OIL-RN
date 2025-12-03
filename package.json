@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-masked-view/masked-view": "github:react-native-masked-view/masked-view",
     "@react-native/new-app-screen": "0.82.1",
     "@react-navigation/bottom-tabs": "^7.8.8",
     "@react-navigation/native": "^7.1.22",
@@ -17,8 +18,10 @@
     "react": "19.1.1",
     "react-native": "0.82.1",
     "react-native-keyboard-aware-scrollview": "^2.1.0",
+    "react-native-linear-gradient": "^2.8.3",
     "react-native-safe-area-context": "^5.6.2",
-    "react-native-screens": "^4.18.0"
+    "react-native-screens": "^4.18.0",
+    "react-native-svg": "^15.15.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
