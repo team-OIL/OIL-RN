@@ -4,8 +4,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useState } from 'react';
 import { RootStackParamList } from './types/navigation';
-import SignIn from './src/pages/SignIn';
-import SignUp from './src/pages/SignUp';
+import SignIn from './src/pages/auth/SignIn';
+import SignUp from './src/pages/auth/SignUp';
+import SignInComplete from './src/pages/auth/SignInComplete';
 
 export type LoggedInParamList = {
   Orders: undefined;
@@ -32,6 +33,13 @@ function App() {
         <Stack.Screen
           name="SignUp"
           component={SignUp}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="SignInComplete"
+          component={SignInComplete}
           options={{
             headerShown: false,
           }}

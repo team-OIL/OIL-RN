@@ -5,7 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import DismissKeyboardView from '../../components/DismissKeyboardView';
 import Input from '../../components/inputs';
 import Button from '../../components/button';
-import Link from '../../components/like';
+import Link from '../../components/link';
 import MaskedTitle from '../../components/Masked/MaskedTitle';
 
 type RootStackParamList = {
@@ -36,7 +36,7 @@ function SignIn() {
     if (!email) return Alert.alert('알림', '이메일을 입력해주세요.');
     if (!password) return Alert.alert('알림', '비밀번호를 입력해주세요.');
     Alert.alert('알림', '로그인 되었습니다.');
-    navigation.navigate('SignUpComplete');
+    navigation.navigate('SignInComplete');
   }, [email, password]);
 
   const canGoNext = email && password;
