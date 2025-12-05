@@ -5,18 +5,43 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
-function MaskedTitle() {
+interface MaskedTitleProps {
+  title: string;
+  subSignInTitle?: string;
+  subSignInText?: string;
+  sudText?: string;
+}
+
+function MaskedTitle({
+  title,
+  subSignInTitle,
+  subSignInText,
+  sudText,
+}: MaskedTitleProps) {
   return (
-    <View style={maskedTitleStyles.maskedTitleContainer}>
+    <View
+      style={[
+        maskedTitleStyles.MaskedTitleContainer,
+        sudText
+          ? maskedTitleStyles.SignCompleteMaskedTitleContainer
+          : maskedTitleStyles.AuthMaskedTitleContainer,
+      ]}
+    >
       <MaskedView
         style={maskedTitleStyles.maskedView}
         maskElement={
-          <View style={maskedTitleStyles.maskElement}>
-            <Text style={maskedTitleStyles.maskText}>환영합니다</Text>
+          <View
+            style={[
+              maskedTitleStyles.maskElement,
+              sudText
+                ? maskedTitleStyles.SignCompleteMaskElement
+                : maskedTitleStyles.AuthMaskElement,
+            ]}
+          >
+            <Text style={maskedTitleStyles.maskText}>{title}</Text>
           </View>
         }
       >
-        {/* 마스크 뒤에 보일 콘텐츠: 오렌지에서 보라색으로 이어지는 가로 그라데이션 */}
         <LinearGradient
           colors={['#FFB153', '#6200FF']}
           locations={[0.45, 0.95]}
@@ -25,22 +50,32 @@ function MaskedTitle() {
           style={maskedTitleStyles.gradient}
         />
       </MaskedView>
-      <Text style={maskedTitleStyles.subtitle}>OIL과 떠나기</Text>
-      <Text style={maskedTitleStyles.subtitleSmall}>
-        OIL에서 어릴 적 추억을 다시 느껴보세요.
-      </Text>
+      {subSignInTitle && subSignInText && (
+        <>
+          <Text style={maskedTitleStyles.subtitle}>{subSignInTitle}</Text>
+          <Text style={maskedTitleStyles.subTextSmall}>{subSignInText}</Text>
+        </>
+      )}
+      {sudText && (
+        <Text style={maskedTitleStyles.subtitleSmall}>{sudText}</Text>
+      )}
     </View>
   );
 }
 
 const maskedTitleStyles = StyleSheet.create({
-  maskedTitleContainer: {
+  MaskedTitleContainer: {
     display: 'flex',
     flexDirection: 'column',
+    padding: 20,
+  },
+  AuthMaskedTitleContainer: {
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    marginBottom: 30,
-    padding: 20,
+  },
+  SignCompleteMaskedTitleContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   maskedView: {
     width: width * 0.9,
@@ -50,8 +85,15 @@ const maskedTitleStyles = StyleSheet.create({
   maskElement: {
     backgroundColor: 'transparent',
     flex: 1,
+    display: 'flex',
+  },
+  AuthMaskElement: {
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
+  },
+  SignCompleteMaskElement: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   maskText: {
     fontSize: 35,
@@ -68,12 +110,17 @@ const maskedTitleStyles = StyleSheet.create({
     color: '#333',
     marginTop: -5,
   },
+  subTextSmall: {
+    marginTop: 5,
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#989898',
+  },
   subtitleSmall: {
     marginTop: 5,
     fontWeight: 'bold',
-
-    fontSize: 16,
-    color: '#989898',
+    fontSize: 35,
+    color: '#000',
   },
 });
 

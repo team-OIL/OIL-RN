@@ -2,16 +2,18 @@ import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 interface ButtonProps {
-  onPress: () => void;
+  onPress?: () => void;
   disabled?: boolean;
-  label: string;
+  label?: string;
 }
 
 const Button = ({ onPress, disabled, label }: ButtonProps) => {
   return (
     <Pressable
       style={
-        disabled
+        label === '시작'
+          ? styles.StartButton
+          : disabled
           ? styles.Button
           : StyleSheet.compose(styles.Button, styles.ButtonActive)
       }
@@ -39,6 +41,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 8,
+  },
+  StartButton: {
+    backgroundColor: '#272429',
+    width: '100%',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderRadius: 8,
+    marginBottom: 15,
   },
   ButtonText: {
     color: 'white',
