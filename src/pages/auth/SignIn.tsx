@@ -7,11 +7,8 @@ import Input from '../../components/inputs';
 import Button from '../../components/button';
 import Link from '../../components/link';
 import MaskedTitle from '../../components/Masked/MaskedTitle';
+import type { RootStackParamList } from '../../../types/navigation';
 
-type RootStackParamList = {
-  SignIn: undefined;
-  SignUp: undefined;
-};
 type Nav = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
 
 function SignIn() {
@@ -36,7 +33,7 @@ function SignIn() {
     if (!email) return Alert.alert('알림', '이메일을 입력해주세요.');
     if (!password) return Alert.alert('알림', '비밀번호를 입력해주세요.');
     Alert.alert('알림', '로그인 되었습니다.');
-    navigation.navigate('SignInComplete');
+    navigation.navigate('SignInComplete', { name: email });
   }, [email, password]);
 
   const canGoNext = email && password;
@@ -44,7 +41,11 @@ function SignIn() {
   return (
     <DismissKeyboardView>
       <View style={styles.container}>
-        <MaskedTitle />
+        <MaskedTitle
+          title="환영합니다"
+          subSignInTitle="OIL과 떠나기"
+          subSignInText="OIL에서 어릴 적 추억을 다시 느껴보세요."
+        />
         <Input
           label="아이디"
           value={email}

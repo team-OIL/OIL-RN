@@ -1,5 +1,6 @@
 export type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
-  SignInComplete: undefined;
+  SignInComplete: { name: string };
+  MainPage: undefined;
 };

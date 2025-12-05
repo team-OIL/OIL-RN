@@ -7,6 +7,7 @@ import { RootStackParamList } from './types/navigation';
 import SignIn from './src/pages/auth/SignIn';
 import SignUp from './src/pages/auth/SignUp';
 import SignInComplete from './src/pages/auth/SignInComplete';
+import MainPage from './src/pages/main/MainPage';
 
 export type LoggedInParamList = {
   Orders: undefined;
@@ -40,6 +41,13 @@ function App() {
         <Stack.Screen
           name="SignInComplete"
           component={SignInComplete}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="MainPage"
+          component={MainPage}
           options={{
             headerShown: false,
           }}

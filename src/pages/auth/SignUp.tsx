@@ -45,7 +45,11 @@ function SignUp() {
   return (
     <DismissKeyboardView>
       <View style={styles.container}>
-        <MaskedTitle title="환영합니다" />
+        <MaskedTitle
+          title="환영합니다"
+          subSignInTitle="OIL과 떠나기"
+          subSignInText="OIL에서 어릴 적 추억을 다시 느껴보세요."
+        />
         <Input
           label="아이디"
           value={email}

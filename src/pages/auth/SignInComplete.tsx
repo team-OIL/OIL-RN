@@ -15,7 +15,7 @@ function SignInComplete({ route }: { route: SignInCompleteRouteProp }) {
   const navigation = useNavigation<Nav>();
 
   const onClickStart = () => {
-    navigation.navigate('Main');
+    navigation.navigate('MainPage');
   };
   return (
     <View style={styles.container}>
