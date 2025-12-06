@@ -6,7 +6,6 @@ import { IMAGES } from '../assets';
 import MainButton from '../components/mainButton';
 
 const MainPage = () => {
-  // 실제 로직 (예: 과제 시작 버튼 핸들러)은 생략합니다.
   const onStartTask = () => {
     console.log('과제 시작');
     // 네비게이션 로직 또는 API 호출 로직 추가
