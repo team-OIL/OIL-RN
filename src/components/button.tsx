@@ -13,6 +13,8 @@ const Button = ({ onPress, disabled, label }: ButtonProps) => {
       style={
         label === '시작'
           ? styles.StartButton
+          : label === '로그아웃'
+          ? styles.LogoutButton
           : disabled
           ? styles.Button
           : StyleSheet.compose(styles.Button, styles.ButtonActive)
@@ -20,7 +22,13 @@ const Button = ({ onPress, disabled, label }: ButtonProps) => {
       disabled={disabled}
       onPress={onPress}
     >
-      <Text style={styles.ButtonText}>{label}</Text>
+      <Text
+        style={
+          label === '로그아웃' ? styles.logoutButtonText : styles.ButtonText
+        }
+      >
+        {label}
+      </Text>
     </Pressable>
   );
 };
@@ -33,6 +41,16 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 8,
     marginBottom: 15,
+  },
+  LogoutButton: {
+    backgroundColor: '#ffffffff',
+    width: '90%',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+    borderColor: '#E4E4E4',
+    borderWidth: 1,
   },
   ButtonActive: {
     backgroundColor: '#007AFF',
@@ -55,6 +73,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  logoutButtonText: {
+    color: '#FF0000',
+    fontSize: 18,
   },
 });
 
