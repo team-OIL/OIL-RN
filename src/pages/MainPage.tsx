@@ -1,13 +1,21 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import Star from '../components/Star';
 import { Image } from 'react-native';
 import { IMAGES } from '../assets';
 import MainButton from '../components/mainButton';
+import LinearGradient from 'react-native-linear-gradient';
 
 const MainPage = () => {
+  const [isTaskStarted, setIsTaskStarted] = useState(true);
+  const [buttonLabel, setButtonLabel] = useState(false);
+  const [todayTaskLabel, setTodayTaskLabel] = useState(false);
+
   const onStartTask = () => {
-    console.log('과제 시작');
+    Alert.alert('알림', '과제를 시작합니다.');
+    setIsTaskStarted(prev => !prev);
+    setButtonLabel(prev => !prev);
+    setTodayTaskLabel(prev => !prev);
     // 네비게이션 로직 또는 API 호출 로직 추가
   };
 
@@ -32,16 +40,25 @@ const MainPage = () => {
         </View>
 
         {/* 2. 메인 컨텐츠 영역 */}
-        <View style={styles.mainContent}>
-          <Text style={styles.todayTaskLabel}>오늘의 과제</Text>
+        <LinearGradient
+          colors={['#FFFFFF', '#E1E1E1']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.mainContent}
+        >
+          <Text style={styles.todayTaskLabel}>
+            {todayTaskLabel
+              ? '빛이 끝날 때 까지 과제를 진행해주세요.'
+              : '오늘의 과제'}
+          </Text>
           <Text style={styles.taskName}>바람 느끼기</Text>
 
-          <Star />
+          <Star isTaskStarted={isTaskStarted} />
 
           <View style={styles.buttonZone}>
-            <MainButton onPress={onStartTask} label="시작" />
+            <MainButton onPress={onStartTask} label={buttonLabel} />
           </View>
-        </View>
+        </LinearGradient>
       </View>
     </View>
   );
@@ -73,12 +90,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
-    // 실제 시간/배터리 정보는 RN에서 시스템적으로 처리됩니다.
   },
   logoPlaceholder: {
     width: 60,
     height: 20,
-    backgroundColor: '#D8BFD8', // 이미지의 왼쪽 상단 로고 색상 근처
+    backgroundColor: '#D8BFD8',
     borderRadius: 5,
   },
   notificationIcon: {
@@ -97,7 +113,6 @@ const styles = StyleSheet.create({
     color: '#555',
   },
 
-  // --- 2. Main Content (중앙) 스타일 ---
   mainContent: {
     flex: 1,
     alignItems: 'center',

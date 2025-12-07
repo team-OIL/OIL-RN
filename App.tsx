@@ -25,6 +25,7 @@ function App() {
     colors: { ...DefaultTheme.colors, background: '#000' },
   };
 
+  const [isTaskStarted, setIsTaskStarted] = useState(true);
   const [isLoggedIn, setLoggedIn] = useState(false);
   return (
     <NavigationContainer theme={MyTheme}>
