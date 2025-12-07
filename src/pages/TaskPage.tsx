@@ -1,11 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Star from '../components/Star';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { IMAGES } from '../assets';
 import { Image } from 'react-native';
 import Button from '../components/button';
 
 export default function TaskPage() {
+  const logout = () => {
+    Alert.alert('알람', 'logout');
+  };
+
   return (
     <View style={style.safeArea}>
       <View style={style.container}>
@@ -30,7 +33,7 @@ export default function TaskPage() {
         </View>
 
         <View style={style.buttonZone}>
-          <Button label='로그아웃'/>
+          <Button label="로그아웃" onPress={logout} />
         </View>
       </View>
     </View>
@@ -92,5 +95,6 @@ const style = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 20,
   },
 });
