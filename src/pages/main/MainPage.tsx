@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Alert, Pressable } from 'react-native';
 import Star from '../../components/Star';
 import { Image } from 'react-native';
@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { RootStackParamList } from '../../../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useRoute, RouteProp } from '@react-navigation/native';
+import { differenceInSeconds } from 'date-fns';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
 type MainPageRouteProp = RouteProp<RootStackParamList, 'BottomTabNavigator'>;
@@ -20,12 +21,42 @@ const MainPage = () => {
   const [isTaskStarted, setIsTaskStarted] = useState(true);
   const [buttonLabel, setButtonLabel] = useState(false);
   const [todayTaskLabel, setTodayTaskLabel] = useState(false);
+  const [second, setSecond] = useState<number>(300);
+  const [isPaused, setIsPaused] = useState(true); //멈춤
+  const startTime = useRef<number>(Date.now());
+
+  useEffect(() => {
+    if (isPaused) return;
+    startTime.current = setInterval(() => {
+      setSecond(prev => {
+        if (prev <= 1) {
+          if (startTime.current) {
+            clearInterval(startTime.current);
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (startTime.current) {
+        clearInterval(startTime.current);
+      }
+    };
+  }, [isPaused]);
+
+  const minutes = Math.floor(second / 60);
+  const seconds = second % 60;
+
+  const timeText = `${minutes}: ${seconds.toString().padStart(2, '0')}`;
 
   const onStartTask = () => {
     Alert.alert('알림', '과제를 시작합니다.');
     setIsTaskStarted(prev => !prev);
     setButtonLabel(prev => !prev);
     setTodayTaskLabel(prev => !prev);
+    setIsPaused(prev => !prev);
     // 네비게이션 로직 또는 API 호출 로직 추가
   };
 
@@ -70,7 +101,11 @@ const MainPage = () => {
           <Star isTaskStarted={isTaskStarted} />
 
           <View style={styles.buttonZone}>
-            <MainButton onPress={onStartTask} label={buttonLabel} />
+            <MainButton
+              onPress={onStartTask}
+              label={buttonLabel}
+              second={timeText}
+            />
           </View>
         </LinearGradient>
       </View>

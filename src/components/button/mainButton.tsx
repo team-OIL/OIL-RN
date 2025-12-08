@@ -5,16 +5,19 @@ interface ButtonProps {
   onPress?: () => void;
   disabled?: boolean;
   label?: boolean;
+  second?: string;
 }
 
-const MainButton = ({ onPress, disabled, label }: ButtonProps) => {
+const MainButton = ({ onPress, disabled, label, second }: ButtonProps) => {
   return (
     <Pressable
       style={label ? styles.StartButton : styles.Button}
       disabled={disabled}
       onPress={onPress}
     >
-      <Text style={styles.ButtonText}>{label ? '중지' : '시작'}</Text>
+      <Text style={second ? styles.ButtonSecondText : styles.ButtonText}>
+        {label ? second : '시작'}
+      </Text>
     </Pressable>
   );
 };
@@ -35,6 +38,12 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 50,
     marginBottom: 15,
+  },
+  ButtonSecondText: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   ButtonText: {
     color: 'white',
