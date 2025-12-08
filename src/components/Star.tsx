@@ -1,6 +1,15 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useRef } from 'react';
+import Animated, {
+  Easing,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { Dimensions } from 'react-native';
+
+const height = Dimensions.get('window').height;
 
 const CIRCLE_SIZE = 250;
 
@@ -13,6 +22,28 @@ const Star = ({ paddingBottom, isTaskStarted }: StarProps) => {
   const topColors = ['#130071', '#E380FF'];
   const bottomColors = ['#FF9747', '#650027'];
   const gradientColors = [...topColors, '#FFFFFF', ...bottomColors];
+  const refAnimation = useSharedValue(0);
+
+  useEffect(() => {
+    refAnimation.value = withTiming(
+      1,
+      {
+        duration: 1000,
+        easing: Easing.inOut(Easing.ease),
+      },
+      finished => {
+        if (finished) {
+          Alert.alert('ㅇㅁㅀㅁㄴㅇ');
+        }
+      },
+    );
+  }, []);
+
+  const animatedStyle = {
+    height: height,
+    backgroundColor: '#9900ffff',
+    transform: [{ translateY: refAnimation }],
+  };
 
   return (
     <View style={{ ...styles.container, paddingBottom }}>
@@ -40,7 +71,7 @@ const Star = ({ paddingBottom, isTaskStarted }: StarProps) => {
               locations={[0, 0.34, 0.5, 0.79, 1]}
               style={styles.gradient}
             />
-            <View style={styles.gradientContainer} />
+            <Animated.View style={[styles.gradientContainer, animatedStyle]} />
           </>
         )}
       </View>
