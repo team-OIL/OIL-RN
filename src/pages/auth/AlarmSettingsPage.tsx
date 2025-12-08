@@ -3,8 +3,14 @@ import { View, Text, StyleSheet, Switch, Alert } from 'react-native';
 import DismissKeyboardView from '../../components/DismissKeyboardView';
 import TimePickerScreen from '../../components/Time/TimePickerScreen';
 import Button from '../../components/button/button';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../../types/navigation';
+
+type Nav = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
 
 function AlarmSettingsPage() {
+  const navigation = useNavigation<Nav>();
   const [isAgreedToReceive, setIsAgreedToReceive] = useState(false);
 
   // 알림 수신 동의 토글
@@ -15,8 +21,7 @@ function AlarmSettingsPage() {
   // '다음' 버튼 클릭 핸들러
   const onPressNext = useCallback(() => {
     Alert.alert('알람', '푸시 알림 수신 동의 여부를 확인해주세요.');
-    // 실제 다음 화면으로 이동 로직을 여기에 구현합니다.
-    // navigation.navigate('NextScreen');
+    navigation.navigate('NicknamePage');
   }, [isAgreedToReceive]);
 
   return (

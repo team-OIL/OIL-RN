@@ -7,8 +7,8 @@ import Link from '../../components/link';
 import MaskedTitle from '../../components/Masked/MaskedTitle';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../../types/navigation';
 
-type RootStackParamList = { SignIn: undefined; SignUp: undefined };
 type Nav = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
 
 function SignUp() {
@@ -27,7 +27,7 @@ function SignUp() {
     [],
   );
 
-  const onClickNav = () => navigation.navigate('SignIn');
+  const onClickNav = () => navigation.navigate('SignIn', { name: '야르' });
 
   const onSubmit = useCallback(() => {
     if (!email) return Alert.alert('알림', '이메일을 입력해주세요.');

@@ -8,10 +8,13 @@ import Button from '../../components/button/button';
 import Link from '../../components/link';
 import MaskedTitle from '../../components/Masked/MaskedTitle';
 import type { RootStackParamList } from '../../../types/navigation';
+import { RouteProp } from '@react-navigation/native';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
+type SignInCompleteRouteProp = RouteProp<RootStackParamList, 'SignInComplete'>;
 
-function SignIn() {
+function SignIn({ route }: { route: SignInCompleteRouteProp }) {
+  const { name } = route.params || {};
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const emailRef = useRef(null);
@@ -33,7 +36,7 @@ function SignIn() {
     if (!email) return Alert.alert('알림', '이메일을 입력해주세요.');
     if (!password) return Alert.alert('알림', '비밀번호를 입력해주세요.');
     Alert.alert('알림', '로그인 되었습니다.');
-    navigation.navigate('SignInComplete', { name: email, isTaskStarted: true });
+    navigation.navigate('SignInComplete', { name: name, isTaskStarted: true });
   }, [email, password]);
 
   const canGoNext = email && password;

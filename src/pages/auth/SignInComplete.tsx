@@ -7,7 +7,7 @@ import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 
-type Nav = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
+type Nav = NativeStackNavigationProp<RootStackParamList, 'SignInComplete'>;
 type SignInCompleteRouteProp = RouteProp<RootStackParamList, 'SignInComplete'>;
 
 function SignInComplete({ route }: { route: SignInCompleteRouteProp }) {
@@ -15,7 +15,7 @@ function SignInComplete({ route }: { route: SignInCompleteRouteProp }) {
   const navigation = useNavigation<Nav>();
 
   const onClickStart = () => {
-    navigation.navigate('MainPage');
+    navigation.navigate('BottomTabNavigator');
   };
   return (
     <View style={styles.container}>
