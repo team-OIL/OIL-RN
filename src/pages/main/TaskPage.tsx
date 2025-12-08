@@ -6,12 +6,13 @@ import { Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { RootStackParamList } from '../../../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RouteProp } from '@react-navigation/native';
+import { useRoute, RouteProp } from '@react-navigation/native';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
 type TaskPageRouteProp = RouteProp<RootStackParamList, 'BottomTabNavigator'>;
 
-export default function MyPage({ route }: { route: TaskPageRouteProp }) {
+export default function TaskPage() {
+  const route = useRoute<TaskPageRouteProp>();
   const { taskSuccess } = route.params;
   const navigation = useNavigation<Nav>();
 
