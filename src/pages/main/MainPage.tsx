@@ -1,12 +1,24 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert, Pressable } from 'react-native';
 import Star from '../../components/Star';
 import { Image } from 'react-native';
 import { IMAGES } from '../../assets';
 import MainButton from '../../components/button/mainButton';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
+import type { RootStackParamList } from '../../../types/navigation';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
 
-const MainPage = () => {
+type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
+
+const MainPage = ({
+  route,
+}: {
+  route: RouteProp<RootStackParamList, 'BottomTabNavigator'>;
+}) => {
+  const { taskSuccess } = route.params;
+  const navigation = useNavigation<Nav>();
   const [isTaskStarted, setIsTaskStarted] = useState(true);
   const [buttonLabel, setButtonLabel] = useState(false);
   const [todayTaskLabel, setTodayTaskLabel] = useState(false);
@@ -28,7 +40,11 @@ const MainPage = () => {
           <View style={styles.statusBarPlaceholder}>
             <Image source={IMAGES.logo} />
             {/* 우측 알림 아이콘 */}
-            <Image source={IMAGES.alarm} />
+            <Pressable
+              onPress={() => navigation.navigate('AlarmPage', { taskSuccess })}
+            >
+              <Image source={IMAGES.alarm} />
+            </Pressable>
           </View>
 
           {/* 명언/메시지 영역 */}

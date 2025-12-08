@@ -1,39 +1,69 @@
 import React from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import Star from '../../components/Star';
 import { IMAGES } from '../../assets';
 import { Image } from 'react-native';
-import Button from '../../components/button/button';
+import { useNavigation } from '@react-navigation/native';
+import type { RootStackParamList } from '../../../types/navigation';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
 
-export default function TaskPage() {
-  const logout = () => {
-    Alert.alert('알람', 'logout');
-  };
+type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
+type TaskPageRouteProp = RouteProp<RootStackParamList, 'BottomTabNavigator'>;
 
+export default function MyPage({ route }: { route: TaskPageRouteProp }) {
+  const { taskSuccess } = route.params;
+  const navigation = useNavigation<Nav>();
+
+  const completedTaskList = [
+    { id: 1, content: '10분 산책하기' },
+    { id: 2, content: '물 2잔 마시기' },
+    { id: 3, content: '스트레칭 5분' },
+    { id: 4, content: '스트레칭 5분' },
+    { id: 5, content: '스트레칭 5분' },
+  ];
   return (
     <View style={style.safeArea}>
       <View style={style.container}>
         <View style={style.header}>
           <View style={style.statusBarPlaceholder}>
             <Image source={IMAGES.logo} />
-            <Image source={IMAGES.alarm} />
+            <Pressable onPress={() => navigation.navigate('AlarmPage', {})}>
+              <Image source={IMAGES.alarm} />
+            </Pressable>
           </View>
         </View>
-        <View style={style.mainContent}>
-          <Image source={IMAGES.icon} />
-          <Text style={style.mainContentText}>안녕하세요,</Text>
-          <Text style={style.mainContentText}>이건희님</Text>
-        </View>
-
-        <View style={style.quoteBoxZone}>
-          <View style={style.quoteBox}>
-            <Text style={style.quoteText}>
-              아름다운 사람이 머문 자리는 자리도 아름답다. - 남자 화장실 -
-            </Text>
+        <View style={style.contentZone}>
+          {/*당신의 색 */}
+          <View style={style.yourColor}>
+            <Text style={style.yourColorText}>당신의 색</Text>
+            <View style={{ transform: [{ scale: 0.5 }], marginTop: -60 }}>
+              <Star isTaskStarted={true} />
+            </View>
           </View>
-        </View>
-
-        <View style={style.buttonZone}>
-          <Button label="로그아웃" onPress={logout} />
+          {/*오늘의 과제 */}
+          <View style={style.todayTask}>
+            <Text style={style.todayTaskText}>오늘의 과제</Text>
+            <View style={style.todayTaskContent}>
+              <Image source={taskSuccess ? IMAGES.checkGreen : IMAGES.check} />
+              <Text>바람 느끼기</Text>
+            </View>
+          </View>
+          {/*완료한 과제 */}
+          <View style={style.completedTask}>
+            <Text style={style.completedTaskText}>완료한 과제</Text>
+            {Array.from(
+              { length: completedTaskList.length },
+              (_, index) => index,
+            ).map(index => (
+              <View key={index} style={style.completedTaskContent}>
+                <View style={style.completedTaskContentItem}>
+                  <Image source={IMAGES.checkGreen} />
+                  <Text>{completedTaskList[index].content}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
         </View>
       </View>
     </View>
@@ -69,32 +99,72 @@ const style = StyleSheet.create({
   mainContent: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     paddingVertical: 30,
+    backgroundColor: '#fff',
   },
-  mainContentText: {
+  contentZone: {
+    width: '100%',
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: '#F9F9F9',
+  },
+  yourColor: {
+    width: '100%',
+    flex: 4,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  yourColorText: {
     fontSize: 26,
     fontWeight: '600',
+    paddingTop: '30%',
   },
-  quoteBoxZone: {
-    flex: 1,
+  todayTask: {
+    width: '100%',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  todayTaskText: {
+    fontSize: 15,
+  },
+  todayTaskContent: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 15,
+    gap: 10,
   },
-  quoteBox: {
-    backgroundColor: '#F5F5F5', // 밝은 배경색 (배경의 그림자 느낌)
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 10,
-    maxWidth: '90%',
+  completedTask: {
+    width: '100%',
+    flex: 5,
+    flexDirection: 'column',
+    padding: 20,
+    marginBottom: 50,
+    backgroundColor: '#fff',
   },
-  quoteText: {
-    fontSize: 12,
-    color: '#555',
+  completedTaskText: {
+    fontSize: 15,
+    marginBottom: 10,
   },
-  buttonZone: {
-    flex: 1,
+  completedTaskContent: {
+    flexDirection: 'column',
+    gap: 10,
+    backgroundColor: '#fff',
+  },
+  completedTaskContentItem: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
+    justifyContent: 'space-between',
+    padding: 12,
+    marginBottom: 5,
+    backgroundColor: '#ffffffff',
+    borderRadius: 30,
   },
 });

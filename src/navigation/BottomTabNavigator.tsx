@@ -5,6 +5,7 @@ import MainPage from '../pages/main/MainPage';
 import TaskPage from '../pages/main/TaskPage';
 import MyPage from '../pages/main/MyPage';
 import { IMAGES } from '../assets';
+import { useState } from 'react';
 
 const Tab = createBottomTabNavigator();
 
@@ -19,6 +20,8 @@ const BottomTabNavigator = () => {
     fontWeight: 'normal' as const,
     color: '#888',
   };
+
+  const [taskSuccess, setTaskSuccess] = useState(true);
 
   return (
     <Tab.Navigator
@@ -48,6 +51,7 @@ const BottomTabNavigator = () => {
       <Tab.Screen
         name="Home"
         component={MainPage}
+        initialParams={{ taskSuccess }}
         options={{
           tabBarLabel: ({ focused }) => (
             <Text style={focused ? focusedFontStyle : unFocusedFontStyle}>
@@ -63,6 +67,7 @@ const BottomTabNavigator = () => {
       <Tab.Screen
         name="Task"
         component={TaskPage}
+        initialParams={{ taskSuccess }}
         options={{
           tabBarLabel: ({ focused }) => (
             <Text style={focused ? focusedFontStyle : unFocusedFontStyle}>

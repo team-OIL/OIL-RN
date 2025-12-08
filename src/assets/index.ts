@@ -11,4 +11,5 @@ export const IMAGES = {
   check: require('./check.png'),
   checkGreen: require('./check-green.png'),
   icon: require('./icon.png'),
+  arrowLeft: require('./arrow-left.png'),
 } as const;
