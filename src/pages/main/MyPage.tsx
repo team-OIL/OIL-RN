@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Star from '../components/Star';
-import { IMAGES } from '../assets';
+import Star from '../../components/Star';
+import { IMAGES } from '../../assets';
 import { Image } from 'react-native';
 
 export default function MyPage() {

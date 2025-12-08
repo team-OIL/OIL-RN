@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import Star from '../components/Star';
+import Star from '../../components/Star';
 import { Image } from 'react-native';
-import { IMAGES } from '../assets';
-import MainButton from '../components/mainButton';
+import { IMAGES } from '../../assets';
+import MainButton from '../../components/button/mainButton';
 import LinearGradient from 'react-native-linear-gradient';
 
 const MainPage = () => {

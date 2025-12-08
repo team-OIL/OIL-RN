@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text, Image, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MainPage from '../pages/MainPage';
-import TaskPage from '../pages/TaskPage';
-import MyPage from '../pages/MyPage';
+import MainPage from '../pages/main/MainPage';
+import TaskPage from '../pages/main/TaskPage';
+import MyPage from '../pages/main/MyPage';
 import { IMAGES } from '../assets';
 
 const Tab = createBottomTabNavigator();

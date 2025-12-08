@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import { View, StyleSheet, TextInput, Alert } from 'react-native';
 import DismissKeyboardView from '../../components/DismissKeyboardView';
 import Input from '../../components/inputs';
-import Button from '../../components/button';
+import Button from '../../components/button/button';
 import Link from '../../components/link';
 import MaskedTitle from '../../components/Masked/MaskedTitle';
 import { useNavigation } from '@react-navigation/native';
@@ -33,7 +33,7 @@ function SignUp() {
     if (!email) return Alert.alert('알림', '이메일을 입력해주세요.');
     if (!password) return Alert.alert('알림', '비밀번호를 입력해주세요.');
     Alert.alert('알림', '회원가입 완료!');
-    navigation.navigate('SignIn');
+    navigation.navigate('AlarmSettings');
   }, [email, password]);
 
   const canGoNext = email && password;

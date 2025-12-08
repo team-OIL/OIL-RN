@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import DismissKeyboardView from '../../components/DismissKeyboardView';
 import Input from '../../components/inputs';
-import Button from '../../components/button';
+import Button from '../../components/button/button';
 import Link from '../../components/link';
 import MaskedTitle from '../../components/Masked/MaskedTitle';
 import type { RootStackParamList } from '../../../types/navigation';

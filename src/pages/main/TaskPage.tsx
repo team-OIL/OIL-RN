@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import { IMAGES } from '../assets';
+import { IMAGES } from '../../assets';
 import { Image } from 'react-native';
-import Button from '../components/button';
+import Button from '../../components/button/button';
 
 export default function TaskPage() {
   const logout = () => {
