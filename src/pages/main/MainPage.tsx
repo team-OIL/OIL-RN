@@ -8,16 +8,14 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import type { RootStackParamList } from '../../../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RouteProp } from '@react-navigation/native';
+import { useRoute, RouteProp } from '@react-navigation/native';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
+type MainPageRouteProp = RouteProp<RootStackParamList, 'BottomTabNavigator'>;
 
-const MainPage = ({
-  route,
-}: {
-  route: RouteProp<RootStackParamList, 'BottomTabNavigator'>;
-}) => {
-  const { taskSuccess } = route.params;
+const MainPage = () => {
+  const route = useRoute<MainPageRouteProp>();
+  const { taskSuccess } = route.params || {};
   const navigation = useNavigation<Nav>();
   const [isTaskStarted, setIsTaskStarted] = useState(true);
   const [buttonLabel, setButtonLabel] = useState(false);

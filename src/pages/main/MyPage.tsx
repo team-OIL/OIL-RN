@@ -9,7 +9,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
 
-export default function TaskPage() {
+export default function MyPage() {
   const navigation = useNavigation<Nav>();
   const logout = () => {
     Alert.alert('알람', 'logout');
