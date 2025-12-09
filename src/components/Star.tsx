@@ -1,79 +1,54 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useRef } from 'react';
 import Animated, {
   Easing,
   useSharedValue,
   withTiming,
+  useAnimatedStyle,
 } from 'react-native-reanimated';
-import { Dimensions } from 'react-native';
-
-const height = Dimensions.get('window').height;
-
-const CIRCLE_SIZE = 250;
 
 interface StarProps {
   paddingBottom?: number;
   isTaskStarted?: boolean;
 }
 
+const CIRCLE_SIZE = 250;
+
 const Star = ({ paddingBottom, isTaskStarted }: StarProps) => {
   const topColors = ['#130071', '#E380FF'];
   const bottomColors = ['#FF9747', '#650027'];
   const gradientColors = [...topColors, '#FFFFFF', ...bottomColors];
-  const refAnimation = useSharedValue(0);
 
-  useEffect(() => {
-    refAnimation.value = withTiming(
-      1,
-      {
-        duration: 1000,
-        easing: Easing.inOut(Easing.ease),
-      },
-      finished => {
-        if (finished) {
-          Alert.alert('ㅇㅁㅀㅁㄴㅇ');
-        }
-      },
-    );
-  }, []);
+  const translateY = useSharedValue(-1);
 
-  const animatedStyle = {
-    height: height,
-    backgroundColor: '#9900ffff',
-    transform: [{ translateY: refAnimation }],
+  const handleLayout = () => {
+    translateY.value = withTiming(-CIRCLE_SIZE, {
+      duration: 50000,
+      easing: Easing.out(Easing.ease),
+    });
   };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
 
   return (
     <View style={{ ...styles.container, paddingBottom }}>
-      <View
-        style={
-          isTaskStarted ? styles.shadowContainerActive : styles.shadowContainer
-        }
-      >
-        {isTaskStarted ? (
-          <>
-            <LinearGradient
-              colors={gradientColors}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              locations={[0, 0.34, 0.5, 0.79, 1]}
-              style={styles.gradient}
-            />
-          </>
-        ) : (
-          <>
-            <LinearGradient
-              colors={gradientColors}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              locations={[0, 0.34, 0.5, 0.79, 1]}
-              style={styles.gradient}
-            />
-            <Animated.View style={[styles.gradientContainer, animatedStyle]} />
-          </>
-        )}
+      <View style={styles.shadowContainer} onLayout={handleLayout}>
+        <View style={styles.innerContainer}>
+          <LinearGradient
+            colors={gradientColors}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            locations={[0, 0.34, 0.5, 0.79, 1]}
+            style={styles.gradient}
+          />
+
+          {!isTaskStarted && (
+            <Animated.View style={[styles.cover, animatedStyle]} />
+          )}
+        </View>
       </View>
     </View>
   );
@@ -90,21 +65,14 @@ const styles = StyleSheet.create({
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,
     borderRadius: CIRCLE_SIZE / 2,
-    overflow: 'visible',
-    backgroundColor: 'transparent',
-
-    elevation: 40,
-    shadowColor: '#FF9747',
-    shadowOffset: { width: 30, height: 30 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
   },
-  shadowContainerActive: {
+
+  innerContainer: {
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,
     borderRadius: CIRCLE_SIZE / 2,
-    overflow: 'visible',
-    backgroundColor: 'transparent',
+    overflow: 'hidden', // ★ 핵심
+    position: 'relative',
   },
 
   gradient: {
@@ -113,14 +81,13 @@ const styles = StyleSheet.create({
     borderRadius: CIRCLE_SIZE / 2,
   },
 
-  gradientContainer: {
+  cover: {
     position: 'absolute',
-    top: 0,
+    bottom: 0,
     left: 0,
     right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: CIRCLE_SIZE / 2,
+    height: CIRCLE_SIZE,
+    backgroundColor: 'rgba(255, 0, 0, 0.5)',
   },
 });
 
