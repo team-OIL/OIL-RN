@@ -101,7 +101,7 @@ const MainPage = () => {
           </Text>
           <Text style={styles.taskName}>바람 느끼기</Text>
 
-          <Star isTaskStarted={isTaskStarted} />
+          <Star isTaskStarted={isTaskStarted} second={second} />
 
           <View style={styles.buttonZone}>
             <MainButton

@@ -11,11 +11,12 @@ import Animated, {
 interface StarProps {
   paddingBottom?: number;
   isTaskStarted?: boolean;
+  second?: number;
 }
 
 const CIRCLE_SIZE = 250;
 
-const Star = ({ paddingBottom, isTaskStarted }: StarProps) => {
+const Star = ({ paddingBottom, isTaskStarted, second = 300 }: StarProps) => {
   const topColors = ['#130071', '#E380FF'];
   const bottomColors = ['#FF9747', '#650027'];
   const gradientColors = [...topColors, '#FFFFFF', ...bottomColors];
@@ -24,7 +25,7 @@ const Star = ({ paddingBottom, isTaskStarted }: StarProps) => {
 
   const handleLayout = () => {
     translateY.value = withTiming(-CIRCLE_SIZE, {
-      duration: 50000,
+      duration: second * 1000,
       easing: Easing.out(Easing.ease),
     });
   };
