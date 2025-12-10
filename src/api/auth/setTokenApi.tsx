@@ -8,5 +8,5 @@ export const setTokenApi = (accessToken: string, pushToken: string) => {
   const data = {
     pushToken,
   };
-  return api.post('/auth/setToken', data, { headers });
+  return api.patch('/auth/push-token', data, { headers });
 };
