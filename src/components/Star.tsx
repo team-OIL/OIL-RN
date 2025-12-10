@@ -6,37 +6,61 @@ import Animated, {
   useSharedValue,
   withTiming,
   useAnimatedStyle,
+  runOnJS,
 } from 'react-native-reanimated';
 
 interface StarProps {
   paddingBottom?: number;
   isTaskStarted?: boolean;
   second?: number;
+  setIsTaskEnd?: (value: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 const CIRCLE_SIZE = 250;
 
-const Star = ({ paddingBottom, isTaskStarted, second = 300 }: StarProps) => {
+const Star = ({
+  paddingBottom,
+  isTaskStarted,
+  second = 300,
+  setIsTaskEnd = () => {},
+}: StarProps) => {
   const topColors = ['#130071', '#E380FF'];
   const bottomColors = ['#FF9747', '#650027'];
   const gradientColors = [...topColors, '#FFFFFF', ...bottomColors];
 
   const translateY = useSharedValue(-1);
 
-  const handleLayout = () => {
-    translateY.value = withTiming(-CIRCLE_SIZE, {
-      duration: second * 1000,
+  useEffect(() => {
+    translateY.value = withTiming(0, {
+      duration: 1000,
       easing: Easing.out(Easing.ease),
     });
-  };
+  }, [isTaskStarted]);
 
+  const handleLayout = () => {
+    translateY.value = withTiming(
+      -CIRCLE_SIZE,
+      {
+        duration: second * 1400,
+        easing: Easing.out(Easing.ease),
+      },
+      finished => {
+        if (finished) {
+          runOnJS(setIsTaskEnd)(prev => !prev);
+        }
+      },
+    );
+  };
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
-
   return (
     <View style={{ ...styles.container, paddingBottom }}>
-      <View style={styles.shadowContainer} onLayout={handleLayout}>
+      <View
+        style={styles.shadowContainer}
+        key={isTaskStarted ? 'start' : 'stop'}
+        onLayout={handleLayout}
+      >
         <View style={styles.innerContainer}>
           <LinearGradient
             colors={gradientColors}
@@ -91,5 +115,4 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 });
-
 export default Star;
