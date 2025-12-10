@@ -4,19 +4,21 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 interface ButtonProps {
   onPress?: () => void;
   disabled?: boolean;
-  label?: boolean;
   second?: string;
+  taskStage?: string;
 }
 
-const MainButton = ({ onPress, disabled, label, second }: ButtonProps) => {
+const MainButton = ({ onPress, disabled, second, taskStage }: ButtonProps) => {
+  const getLabel = () => {
+    if (taskStage === 'done') return '종료';
+    if (taskStage === 'idle') return '시작';
+    return second;
+  };
+
   return (
-    <Pressable
-      style={label ? styles.StartButton : styles.Button}
-      disabled={disabled}
-      onPress={onPress}
-    >
+    <Pressable style={styles.Button} disabled={disabled} onPress={onPress}>
       <Text style={second ? styles.ButtonSecondText : styles.ButtonText}>
-        {label ? second : '시작'}
+        {getLabel()}
       </Text>
     </Pressable>
   );
@@ -24,14 +26,6 @@ const MainButton = ({ onPress, disabled, label, second }: ButtonProps) => {
 
 const styles = StyleSheet.create({
   Button: {
-    backgroundColor: '#272429',
-    width: '60%',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderRadius: 50,
-    marginBottom: 15,
-  },
-  StartButton: {
     backgroundColor: '#272429',
     width: '60%',
     paddingHorizontal: 20,
