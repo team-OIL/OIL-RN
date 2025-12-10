@@ -6,36 +6,61 @@ import Animated, {
   useSharedValue,
   withTiming,
   useAnimatedStyle,
+  runOnJS,
 } from 'react-native-reanimated';
+import { TaskStage } from '../../types/TaskStage';
 
 interface StarProps {
   paddingBottom?: number;
-  isTaskStarted?: boolean;
+  taskStage?: TaskStage;
+  second?: number;
+  setTaskStage?: React.Dispatch<React.SetStateAction<TaskStage>>;
 }
 
 const CIRCLE_SIZE = 250;
 
-const Star = ({ paddingBottom, isTaskStarted }: StarProps) => {
+const Star = ({
+  paddingBottom,
+  taskStage,
+  second = 300,
+  setTaskStage,
+}: StarProps) => {
   const topColors = ['#130071', '#E380FF'];
   const bottomColors = ['#FF9747', '#650027'];
   const gradientColors = [...topColors, '#FFFFFF', ...bottomColors];
 
   const translateY = useSharedValue(-1);
 
-  const handleLayout = () => {
-    translateY.value = withTiming(-CIRCLE_SIZE, {
-      duration: 50000,
+  useEffect(() => {
+    translateY.value = withTiming(0, {
+      duration: 1000,
       easing: Easing.out(Easing.ease),
     });
-  };
+  }, [taskStage]);
+
+  useEffect(() => {
+    if (taskStage === 'progress') {
+      translateY.value = withTiming(
+        -CIRCLE_SIZE,
+        {
+          duration: second * 10,
+          easing: Easing.out(Easing.ease),
+        },
+        finished => {
+          if (finished && setTaskStage) {
+            runOnJS(setTaskStage)('done');
+          }
+        },
+      );
+    }
+  }, [taskStage]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
-
   return (
     <View style={{ ...styles.container, paddingBottom }}>
-      <View style={styles.shadowContainer} onLayout={handleLayout}>
+      <View style={styles.shadowContainer} >
         <View style={styles.innerContainer}>
           <LinearGradient
             colors={gradientColors}
@@ -45,7 +70,7 @@ const Star = ({ paddingBottom, isTaskStarted }: StarProps) => {
             style={styles.gradient}
           />
 
-          {!isTaskStarted && (
+          {taskStage === 'progress' && (
             <Animated.View style={[styles.cover, animatedStyle]} />
           )}
         </View>
@@ -71,7 +96,7 @@ const styles = StyleSheet.create({
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,
     borderRadius: CIRCLE_SIZE / 2,
-    overflow: 'hidden', // ★ 핵심
+    overflow: 'hidden',
     position: 'relative',
   },
 
@@ -90,5 +115,4 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 });
-
 export default Star;
