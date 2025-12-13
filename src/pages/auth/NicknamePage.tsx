@@ -32,17 +32,25 @@ function NicknamePage({
     [],
   );
 
-  const onSubmit = useCallback(() => {
+  const onSubmit = useCallback(async () => {
     if (!nickname) return Alert.alert('알림', '닉네임을 입력해주세요.');
     Alert.alert('알림', '회원가입 완료!');
-    signUpApi({
-      email,
-      password,
-      nickname,
-      missionTime: titleTime,
-      isAlarmEnabled: isAgreedToReceive,
-    });
-    navigation.navigate('SignIn', { name: nickname });
+    try {
+      const response = await signUpApi({
+        email,
+        password,
+        nickname,
+        missionTime: titleTime,
+        isAlarmEnabled: isAgreedToReceive,
+      });
+      if (response.status === 200) {
+        Alert.alert('알림', '회원가입 성공');
+        navigation.navigate('SignIn', { name: nickname });
+      }
+    } catch (e) {
+      Alert.alert('알림', '회원가입 중 오류가 발생했습니다.');
+      console.error(e);
+    }
   }, [nickname]);
 
   const canGoNext = nickname;

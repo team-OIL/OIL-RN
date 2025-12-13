@@ -26,7 +26,7 @@ function AlarmSettingsPage({ route }: AlarmSettingsPageProps) {
     setIsAgreedToReceive(prevState => !prevState);
   };
 
-  const titleTime = `${ampm} ${hour}:${minute}`;
+  const titleTime = `${hour}:${minute}`;
 
   // '다음' 버튼 클릭 핸들러
   const onPressNext = useCallback(() => {
