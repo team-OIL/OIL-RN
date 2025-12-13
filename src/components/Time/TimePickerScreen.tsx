@@ -20,11 +20,21 @@ const HOURS = generateNumbers(1, 12); // 12시간 형식 (1~12)
 const MINUTES = generateNumbers(0, 59); // 00분~59분
 const AMPM = ['오전', '오후'];
 
-function TimePickerScreen() {
-  const [ampm, setAmpm] = useState('오후');
-  const [hour, setHour] = useState('07');
-  const [minute, setMinute] = useState('35');
-
+function TimePickerScreen({
+  ampm,
+  hour,
+  minute,
+  setAmpm,
+  setHour,
+  setMinute,
+}: {
+  ampm: string;
+  hour: string;
+  minute: string;
+  setAmpm: (value: string) => void;
+  setHour: (value: string) => void;
+  setMinute: (value: string) => void;
+}) {
   return (
     <View style={styles.container}>
       <View style={styles.pickerWrapper}>

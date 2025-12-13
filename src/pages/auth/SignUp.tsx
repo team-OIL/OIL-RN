@@ -33,7 +33,10 @@ function SignUp() {
     if (!email) return Alert.alert('알림', '이메일을 입력해주세요.');
     if (!password) return Alert.alert('알림', '비밀번호를 입력해주세요.');
     Alert.alert('알림', '회원가입 완료!');
-    navigation.navigate('AlarmSettings');
+    navigation.navigate('AlarmSettings', {
+      email,
+      password,
+    });
   }, [email, password]);
 
   const canGoNext = email && password;
