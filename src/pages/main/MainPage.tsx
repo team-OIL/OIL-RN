@@ -41,14 +41,13 @@ const MainPage = () => {
     }
     if (taskStage === 'idle') {
       setTaskStage('progress');
-    }
-    if (taskStage === 'progress') {
+    } else if (taskStage === 'progress') {
       setTaskStage('idle');
+    } else if (taskStage === 'done') {
+      Alert.alert('알림', '과제를 완료했습니다.');
+      return;
     }
     setIsPaused(prev => !prev);
-    if (taskStage === 'done') {
-      Alert.alert('알림', '과제를 완료했습니다.');
-    }
     // 네비게이션 로직 또는 API 호출 로직 추가
   };
 
