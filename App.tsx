@@ -23,16 +23,17 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function App() {
+  console.log('App 렌더링됨');
   const MyTheme = {
     ...DefaultTheme,
-    colors: { ...DefaultTheme.colors, background: '#000' },
+    colors: { ...DefaultTheme.colors, background: '#fff' },
   };
 
   const [isTaskStarted, setIsTaskStarted] = useState(true);
   const [isLoggedIn, setLoggedIn] = useState(false);
   return (
     <NavigationContainer theme={MyTheme}>
-      <Stack.Navigator>
+      <Stack.Navigator id="stack">
         <Stack.Screen
           name="SignIn"
           component={SignIn}

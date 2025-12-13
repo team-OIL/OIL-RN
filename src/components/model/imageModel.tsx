@@ -8,22 +8,44 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from 'react-native-image-picker';
 
 const PlusIcon = () => <Text style={modalStyles.plusIcon}>+</Text>;
 
 const ImgModel = ({ onClose }: { onClose: () => void }) => {
   const [imageUrl, setImageUrl] = useState('');
-  const [status, setStatus] = ImagePicker.useMediaLibraryPermissions();
+
   const handleComplete = () => {
     console.log('기록 저장 및 완료');
-    onClose(); // 저장 후 모달 닫기
+    onClose();
   };
 
   const handleAddImage = () => {
-    console.log('이미지 추가 영역 클릭됨');
-    // 여기에 이미지 선택 로직 구현
+    ImagePicker.launchImageLibrary(
+      {
+        mediaType: 'photo',
+        maxWidth: 1024,
+        maxHeight: 1024,
+        quality: 0.8,
+      },
+      response => {
+        if (response.didCancel) return;
+
+        if (response.errorCode) {
+          console.log('ImagePicker Error:', response.errorMessage);
+          return;
+        }
+
+        if (response.assets && response.assets.length > 0) {
+          const uri = response.assets[0].uri;
+          if (typeof uri === 'string') {
+            setImageUrl(uri);
+          }
+        }
+      },
+    );
   };
 
   return (
@@ -31,12 +53,10 @@ const ImgModel = ({ onClose }: { onClose: () => void }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={modalStyles.wrapper}
     >
-      {/* ScrollView를 사용하여 내용이 길어지거나 키보드가 올라올 때 대응 */}
       <ScrollView
         contentContainerStyle={modalStyles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* 상단 텍스트 영역 */}
         <View style={modalStyles.header}>
           <Text style={modalStyles.instructionText}>
             과제를 완료했습니다.{'\n'}오늘의 추억을 사진과 글로 남겨주세요.
@@ -44,7 +64,6 @@ const ImgModel = ({ onClose }: { onClose: () => void }) => {
           <Text style={modalStyles.taskTitle}>바람 느끼기 완료</Text>
         </View>
 
-        {/* 메인 콘텐츠 카드 */}
         <View style={modalStyles.card}>
           <View style={modalStyles.inputContainer}>
             <Text style={modalStyles.label}>내용</Text>
@@ -62,15 +81,24 @@ const ImgModel = ({ onClose }: { onClose: () => void }) => {
             style={modalStyles.imageAddArea}
             onPress={handleAddImage}
           >
-            <PlusIcon />
-            <Text style={modalStyles.imagePromptText}>
-              눌러서 이미지 추가하기
-            </Text>
+            {imageUrl ? (
+              <Image
+                source={{ uri: imageUrl }}
+                style={{ width: '100%', height: '100%', borderRadius: 12 }}
+                resizeMode="cover"
+              />
+            ) : (
+              <>
+                <PlusIcon />
+                <Text style={modalStyles.imagePromptText}>
+                  눌러서 이미지 추가하기
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>
 
-      {/* 완료 버튼 (스크롤뷰 밖에 배치하여 항상 보이도록 함) */}
       <TouchableOpacity
         style={modalStyles.completeButton}
         onPress={handleComplete}
@@ -84,7 +112,7 @@ const ImgModel = ({ onClose }: { onClose: () => void }) => {
 const modalStyles = StyleSheet.create({
   wrapper: {
     width: '100%',
-    maxHeight: '90%', // 모달이 화면의 90%를 넘지 않도록 설정
+    maxHeight: '90%',
     backgroundColor: '#F7F7F7',
     borderRadius: 20,
     overflow: 'hidden',
@@ -92,7 +120,7 @@ const modalStyles = StyleSheet.create({
   scrollContainer: {
     paddingHorizontal: 20,
     paddingTop: 30,
-    paddingBottom: 20, // 버튼과의 간격 확보
+    paddingBottom: 20,
   },
 
   header: {
@@ -169,7 +197,7 @@ const modalStyles = StyleSheet.create({
     paddingVertical: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 20, 
+    marginHorizontal: 20,
     marginBottom: 20,
   },
   buttonText: {

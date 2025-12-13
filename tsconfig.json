@@ -1,5 +1,9 @@
 {
   "extends": "@react-native/typescript-config",
+
+  "compilerOptions": {
+    "jsx": "react-native" // 💡 이 부분을 추가하여 JSX 오류를 명시적으로 해결합니다.
+  },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["**/node_modules", "**/Pods"]
 }
