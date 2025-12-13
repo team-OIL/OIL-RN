@@ -6,10 +6,23 @@ import Button from '../../components/button/button';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../../types/navigation';
+import { signUpApi } from '../../api/auth/SignUpApi';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
 
-function NicknamePage() {
+function NicknamePage({
+  route,
+}: {
+  route: {
+    params: {
+      email: string;
+      password: string;
+      isAgreedToReceive: boolean;
+      titleTime: string;
+    };
+  };
+}) {
+  const { email, password, titleTime, isAgreedToReceive } = route.params;
   const [nickname, setNickname] = useState('');
   const nicknameRef = useRef<TextInput | null>(null);
   const navigation = useNavigation<Nav>();
@@ -22,6 +35,13 @@ function NicknamePage() {
   const onSubmit = useCallback(() => {
     if (!nickname) return Alert.alert('알림', '닉네임을 입력해주세요.');
     Alert.alert('알림', '회원가입 완료!');
+    signUpApi({
+      email,
+      password,
+      nickname,
+      missionTime: titleTime,
+      isAlarmEnabled: isAgreedToReceive,
+    });
     navigation.navigate('SignIn', { name: nickname });
   }, [nickname]);
 

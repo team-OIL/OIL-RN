@@ -3,22 +3,23 @@ import { api } from '../axios';
 export const signUpApi = ({
   email,
   password,
-  userName,
+  nickname,
   missionTime,
   isAlarmEnabled,
 }: {
   email: string;
   password: string;
-  userName: string;
+  nickname: string;
   missionTime: string;
   isAlarmEnabled: boolean;
 }) => {
   const data = {
     email,
     password,
-    userName,
+    nickname,
     missionTime,
     isAlarmEnabled,
   };
+  console.log('회원가입 완료', data);
   return api.post('/auth/sign-up', data);
 };

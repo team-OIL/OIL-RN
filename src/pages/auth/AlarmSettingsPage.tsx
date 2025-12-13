@@ -9,19 +9,34 @@ import type { RootStackParamList } from '../../../types/navigation';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
 
-function AlarmSettingsPage() {
+interface AlarmSettingsPageProps {
+  route: { params: { email: string; password: string } };
+}
+
+function AlarmSettingsPage({ route }: AlarmSettingsPageProps) {
+  const { email, password } = route.params;
   const navigation = useNavigation<Nav>();
   const [isAgreedToReceive, setIsAgreedToReceive] = useState(false);
+  const [ampm, setAmpm] = useState('오후');
+  const [hour, setHour] = useState('07');
+  const [minute, setMinute] = useState('35');
 
   // 알림 수신 동의 토글
   const toggleSwitch = () => {
     setIsAgreedToReceive(prevState => !prevState);
   };
 
+  const titleTime = `${ampm} ${hour}:${minute}`;
+
   // '다음' 버튼 클릭 핸들러
   const onPressNext = useCallback(() => {
     Alert.alert('알람', '푸시 알림 수신 동의 여부를 확인해주세요.');
-    navigation.navigate('NicknamePage');
+    navigation.navigate('NicknamePage', {
+      email,
+      password,
+      isAgreedToReceive,
+      titleTime,
+    });
   }, [isAgreedToReceive]);
 
   return (
@@ -65,7 +80,14 @@ function AlarmSettingsPage() {
             푸시 알림 수신에 동의하십니까?
           </Text>
           <View style={styles.timePickerContainer}>
-            <TimePickerScreen />
+            <TimePickerScreen
+              ampm={ampm}
+              hour={hour}
+              minute={minute}
+              setAmpm={setAmpm}
+              setHour={setHour}
+              setMinute={setMinute}
+            />
           </View>
         </View>
 
