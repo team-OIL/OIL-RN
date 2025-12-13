@@ -12,13 +12,19 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker';
 
+interface ImgModelProps {
+  onClose: () => void;
+  setTaskStage: (stage: any) => void;
+}
+
 const PlusIcon = () => <Text style={modalStyles.plusIcon}>+</Text>;
 
-const ImgModel = ({ onClose }: { onClose: () => void }) => {
+const ImgModel = ({ onClose, setTaskStage }: ImgModelProps) => {
   const [imageUrl, setImageUrl] = useState('');
 
   const handleComplete = () => {
     console.log('기록 저장 및 완료');
+    setTaskStage('idle');
     onClose();
   };
 

@@ -138,7 +138,7 @@ const MainPage = () => {
         >
           <View style={styles.modalOverlay}>
             {/* PostCompletionScreen에 닫기 함수 전달 */}
-            <ImgModel onClose={closeModal} />
+            <ImgModel onClose={closeModal} setTaskStage={setTaskStage} />
           </View>
         </Modal>
       </>
