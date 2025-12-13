@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Star from '../../components/Star';
 import { IMAGES } from '../../assets';
@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { RootStackParamList } from '../../../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useRoute, RouteProp } from '@react-navigation/native';
+import TaskModel from '../../components/model/taskModel';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
 type TaskPageRouteProp = RouteProp<RootStackParamList, 'BottomTabNavigator'>;
@@ -15,6 +16,14 @@ export default function TaskPage() {
   const route = useRoute<TaskPageRouteProp>();
   const { taskSuccess } = route.params || {};
   const navigation = useNavigation<Nav>();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const openModal = () => setIsModalVisible(true);
+  const closeModal = () => setIsModalVisible(false);
+
+  const onClickModel = () => {
+    setIsModalVisible(true);
+  };
 
   const completedTaskList = [
     { id: 1, content: '10분 산책하기' },
@@ -39,7 +48,7 @@ export default function TaskPage() {
           <View style={style.yourColor}>
             <Text style={style.yourColorText}>당신의 색</Text>
             <View style={{ transform: [{ scale: 0.5 }], marginTop: -60 }}>
-              <Star isTaskStarted={true} />
+              <Star paddingBottom={30} />
             </View>
           </View>
           {/*오늘의 과제 */}
@@ -51,7 +60,7 @@ export default function TaskPage() {
             </View>
           </View>
           {/*완료한 과제 */}
-          <View style={style.completedTask}>
+          <Pressable style={style.completedTask} onPress={onClickModel}>
             <Text style={style.completedTaskText}>완료한 과제</Text>
             {Array.from(
               { length: completedTaskList.length },
@@ -64,9 +73,18 @@ export default function TaskPage() {
                 </View>
               </View>
             ))}
-          </View>
+          </Pressable>
         </View>
       </View>
+      {isModalVisible && (
+        <TaskModel
+          taskTitle="오늘의 과제"
+          completionDate="2025-12-13"
+          recordImageUrl="https://via.placeholder.com/150"
+          recordContent="오늘의 과제를 완료했습니다."
+          onClose={closeModal}
+        />
+      )}
     </View>
   );
 }
@@ -114,7 +132,7 @@ const style = StyleSheet.create({
   },
   yourColor: {
     width: '100%',
-    flex: 4,
+    flex: 3.5,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
