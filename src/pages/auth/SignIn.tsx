@@ -9,6 +9,7 @@ import Link from '../../components/link';
 import MaskedTitle from '../../components/Masked/MaskedTitle';
 import type { RootStackParamList } from '../../../types/navigation';
 import { RouteProp } from '@react-navigation/native';
+import { loginApi } from '../../api/auth/LoginApi';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
 type SignInCompleteRouteProp = RouteProp<RootStackParamList, 'SignInComplete'>;
@@ -32,11 +33,21 @@ function SignIn({ route }: { route: SignInCompleteRouteProp }) {
 
   const onClickNav = () => navigation.navigate('SignUp');
 
-  const onSubmit = useCallback(() => {
+  const onSubmit = useCallback(async () => {
     if (!email) return Alert.alert('알림', '이메일을 입력해주세요.');
     if (!password) return Alert.alert('알림', '비밀번호를 입력해주세요.');
-    Alert.alert('알림', '로그인 되었습니다.');
-    navigation.navigate('SignInComplete', { name: name, isTaskStarted: true });
+    try {
+      const response = await loginApi({ email, password });
+      if (response.status === 200) {
+        Alert.alert('알림', '로그인 되었습니다.');
+        navigation.navigate('SignInComplete', { name, isTaskStarted: true });
+      } else {
+        Alert.alert('알림', '로그인 실패: ' + response.data.message);
+      }
+    } catch (error) {
+      Alert.alert('알림', '로그인 중 오류가 발생했습니다.');
+      console.error(error);
+    }
   }, [email, password]);
 
   const canGoNext = email && password;

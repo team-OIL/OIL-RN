@@ -20,5 +20,6 @@ export const signUpApi = ({
     missionTime,
     isAlarmEnabled,
   };
+  console.log('gda', data);
   return api.post('/auth/sign-up', data);
 };

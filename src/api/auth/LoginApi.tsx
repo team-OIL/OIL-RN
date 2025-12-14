@@ -11,5 +11,6 @@ export const loginApi = ({
     email,
     password,
   };
+  console.log('loginApi', data);
   return api.post('/auth/login', data);
 };
