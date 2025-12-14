@@ -13,9 +13,15 @@ import useTimer from '../../hooks/useTimer';
 import { TaskStage } from '../../../types/TaskStage';
 import ImgModel from '../../components/model/imageModel';
 import { BlurView } from '@react-native-community/blur';
+import { adviceApi } from '../../api/advice/adviceApi';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
 type MainPageRouteProp = RouteProp<RootStackParamList, 'BottomTabNavigator'>;
+type Advice = {
+  author: string;
+  authorProfile: string;
+  message: string;
+};
 
 const MainPage = () => {
   const { second, setSecond, isPaused, setIsPaused, reset } = useTimer(300);
@@ -30,6 +36,23 @@ const MainPage = () => {
   const timeText = `${minutes}: ${seconds.toString().padStart(2, '0')}`;
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const [advice, setAdvice] = useState<Advice | null>(null);
+
+  useEffect(() => {
+    const fetchAdvice = async () => {
+      try {
+        const response = await adviceApi();
+        const adviceData: Advice = response.data;
+        console.log('advice', adviceData);
+        setAdvice(adviceData);
+      } catch (error) {
+        console.log('API 호출 에러:', error);
+      }
+    };
+
+    fetchAdvice();
+  }, []);
 
   const openModal = () => setIsModalVisible(true);
   const closeModal = () => setIsModalVisible(false);
@@ -159,9 +182,7 @@ const MainPage = () => {
 
           {/* 명언/메시지 영역 */}
           <View style={styles.quoteBox}>
-            <Text style={styles.quoteText}>
-              아름다운 사람이 머문 자리는 자리도 아름답다. - 남자 화장실 -
-            </Text>
+            <Text style={styles.quoteText}>{advice?.message} - {advice?.author}</Text>
           </View>
         </View>
         {/* 2. 메인 컨텐츠 영역 */}
@@ -249,6 +270,7 @@ const styles = StyleSheet.create({
   },
   quoteText: {
     fontSize: 12,
+    fontWeight: '600',
     color: '#555',
   },
 
