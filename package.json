@@ -22,6 +22,7 @@
         "react": "^19.2.3",
         "react-dom": "^19.2.3",
         "react-native": "^0.83.0",
+        "react-native-bootsplash": "^6.3.11",
         "react-native-config": "^1.6.1",
         "react-native-image-picker": "^8.2.1",
         "react-native-keyboard-aware-scrollview": "^2.1.0",
