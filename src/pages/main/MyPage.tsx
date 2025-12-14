@@ -6,13 +6,26 @@ import Button from '../../components/button/button';
 import { useNavigation } from '@react-navigation/native';
 import type { RootStackParamList } from '../../../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { logoutApi } from '../../api/auth/LogoutApi';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
 
 export default function MyPage() {
   const navigation = useNavigation<Nav>();
-  const logout = () => {
-    Alert.alert('알람', 'logout');
+  const logout = async () => {
+    try {
+      const auth = await EncryptedStorage.getItem('auth');
+      if (!auth) return;
+
+      const { accessToken } = JSON.parse(auth);
+      await logoutApi(accessToken);
+      Alert.alert('알림', '로그아웃 되었습니다.');
+      await EncryptedStorage.removeItem('auth');
+      navigation.navigate('SignIn', {});
+    } catch (error) {
+      console.log('서버 로그아웃 실패, 로컬 삭제 진행');
+    }
   };
 
   return (

@@ -4,5 +4,6 @@ export const logoutApi = (accessToken: string) => {
   const headers = {
     Authorization: `Bearer ${accessToken}`,
   };
-  return api.post('/auth/logout', { headers });
+  console.log('logoutApi', accessToken);
+  return api.delete('/auth/logout', { headers });
 };
