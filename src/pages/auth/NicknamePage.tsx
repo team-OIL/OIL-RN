@@ -35,7 +35,9 @@ function NicknamePage({ route }: { route: SignUpRouteProp }) {
         isAlarmEnabled: isAgreedToReceive,
       });
       navigation.navigate('SignIn', { name: nickname });
-    } catch (e) {}
+    } catch (e) {
+      console.log('에러 발생', e);
+    }
   }, [nickname]);
 
   const canGoNext = nickname;

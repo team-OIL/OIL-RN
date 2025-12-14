@@ -28,7 +28,6 @@ function AlarmSettingsPage({ route }: { route: SignUpRouteProp }) {
 
   // '다음' 버튼 클릭 핸들러
   const onPressNext = useCallback(() => {
-    Alert.alert('알람', '푸시 알림 수신 동의 여부를 확인해주세요.');
     navigation.navigate('NicknamePage', {
       email,
       password,
