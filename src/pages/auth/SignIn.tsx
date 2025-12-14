@@ -10,6 +10,7 @@ import MaskedTitle from '../../components/Masked/MaskedTitle';
 import type { RootStackParamList } from '../../../types/navigation';
 import { RouteProp } from '@react-navigation/native';
 import { loginApi } from '../../api/auth/LoginApi';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
 type SignInCompleteRouteProp = RouteProp<RootStackParamList, 'SignInComplete'>;
@@ -38,8 +39,19 @@ function SignIn({ route }: { route: SignInCompleteRouteProp }) {
     if (!password) return Alert.alert('알림', '비밀번호를 입력해주세요.');
     try {
       const response = await loginApi({ email, password });
+      console.log('das', response);
+
       if (response.status === 200) {
         Alert.alert('알림', '로그인 되었습니다.');
+        await EncryptedStorage.setItem(
+          'auth',
+          JSON.stringify({
+            accessToken: response.data.accessToken,
+            refreshToken: response.data.refreshToken,
+          }),
+        );
+        const savedAccessToken = await EncryptedStorage.getItem('auth');
+        console.log(savedAccessToken);
         navigation.navigate('SignInComplete', { name, isTaskStarted: true });
       } else {
         Alert.alert('알림', '로그인 실패: ' + response.data.message);
