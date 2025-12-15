@@ -26,8 +26,12 @@ type Advice = {
   authorProfile: string;
   message: string;
 };
+type taskData = {
+  userMissionId: number;
+  missionContent: string;
+};
 type TaskPageProps = {
-  taskData: any;
+  taskData: taskData;
   taskSuccess: boolean;
 };
 
@@ -266,17 +270,18 @@ const MainPage = ({ taskData }: TaskPageProps) => {
           />
 
           <View style={styles.buttonZone}>
-            <Text>완료한 과제</Text>
+            <View style={styles.completedTaskZone}>
+              <Text style={styles.completedTaskLabel}>완료한 과제</Text>
+            </View>
             {completedTaskList.map(item => (
               <Pressable
                 key={item.userMissionId}
                 onPress={() => onClickModel(item.userMissionId)}
+                style={styles.completedTaskContent}
               >
-                <View style={styles.completedTaskContent}>
-                  <View style={styles.completedTaskContentItem}>
-                    <Image source={IMAGES.checkGreen} />
-                    <Text>{item.missionTitle}</Text>
-                  </View>
+                <View style={styles.completedTaskContentItem}>
+                  <Image source={IMAGES.checkGreen} />
+                  <Text>{item.missionTitle}</Text>
                 </View>
               </Pressable>
             ))}
@@ -458,7 +463,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '30%',
     alignItems: 'center',
-    backgroundColor: 'transparent',
+    gap: 10,
   },
   modalOverlay: {
     flex: 1,
@@ -466,10 +471,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
   },
+  completedTaskZone: {
+    width: '90%',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  completedTaskLabel: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#585858',
+  },
   completedTaskContent: {
     flexDirection: 'column',
+    width: '90%',
     gap: 10,
-    backgroundColor: '#ffffffff',
   },
   completedTaskContentItem: {
     flexDirection: 'row',

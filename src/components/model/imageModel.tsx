@@ -38,8 +38,9 @@ const ImgModel = ({ onClose, setTaskStage, taskData }: ImgModelProps) => {
 
       const { accessToken } = JSON.parse(auth);
 
-      const savedId = await EncryptedStorage.getItem('userMissionId');
-      const userMissionId = savedId ? JSON.parse(savedId) : null;
+      const savedId = await EncryptedStorage.getItem('missions');
+      if (!savedId) return;
+      const { userMissionId } = JSON.parse(savedId);
 
       if (!userMissionId) {
         console.log('userMissionId가 없습니다.');
