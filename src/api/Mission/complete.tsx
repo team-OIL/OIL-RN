@@ -20,6 +20,5 @@ export const completeApi = ({
     resultText,
     resultImageUrl,
   };
-  console.log('completedList', data, userMissionid, accessToken);
   return api.post(`/missions/${userMissionid}/complete`, data, { headers });
 };

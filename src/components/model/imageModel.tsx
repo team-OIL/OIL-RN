@@ -15,10 +15,14 @@ import { TaskStage } from '../../../types/TaskStage';
 import { completeApi } from '../../api/Mission/complete';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
+interface TaskData {
+  missionContent: string;
+}
+
 interface ImgModelProps {
   onClose: () => void;
   setTaskStage: (stage: TaskStage) => void;
-  taskData: any;
+  taskData: TaskData;
 }
 
 const PlusIcon = () => <Text style={modalStyles.plusIcon}>+</Text>;
