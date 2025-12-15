@@ -65,6 +65,10 @@ export default function MyPage() {
     }
   };
 
+  const onChangeAlarm = () => {
+    navigation.navigate('ChangeAlarmPage');
+  };
+
   return (
     <View style={style.safeArea}>
       <View style={style.container}>
@@ -88,6 +92,9 @@ export default function MyPage() {
               {advice?.message} - {advice?.author}
             </Text>
           </View>
+          <Pressable style={style.alarmBox} onPress={onChangeAlarm}>
+            <Text style={style.alarmText}>알람 시간 변경</Text>
+          </Pressable>
         </View>
 
         <View style={style.buttonZone}>
@@ -137,6 +144,7 @@ const style = StyleSheet.create({
   quoteBoxZone: {
     flex: 1,
     alignItems: 'center',
+    gap: 30,
   },
   quoteBox: {
     backgroundColor: '#F5F5F5', // 밝은 배경색 (배경의 그림자 느낌)
@@ -149,6 +157,19 @@ const style = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#555',
+  },
+  alarmBox: {
+    backgroundColor: 'transparent',
+    borderRadius: 10,
+    width: '90%',
+    padding: 15,
+    borderColor: '#E4E4E4',
+    borderWidth: 1,
+  },
+  alarmText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#585858',
   },
   buttonZone: {
     flex: 1,

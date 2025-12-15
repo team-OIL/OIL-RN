@@ -11,6 +11,7 @@ import SignInComplete from './src/pages/auth/SignInComplete';
 import AlarmSettings from './src/pages/auth/AlarmSettingsPage';
 import NicknamePage from './src/pages/auth/NicknamePage';
 import AlarmPage from './src/pages/main/AlarmPage';
+import ChangeAlarmPage from './src/pages/main/ChangeAlarmPage';
 
 export type LoggedInParamList = {
   Orders: undefined;
@@ -79,6 +80,13 @@ function App() {
         <Stack.Screen
           name="AlarmPage"
           component={AlarmPage}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="ChangeAlarmPage"
+          component={ChangeAlarmPage}
           options={{
             headerShown: false,
           }}

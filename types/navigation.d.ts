@@ -11,4 +11,5 @@ export type RootStackParamList = {
     TastTime: string;
   };
   AlarmPage: { taskSuccess?: boolean };
+  ChangeAlarmPage: undefined;
 };
