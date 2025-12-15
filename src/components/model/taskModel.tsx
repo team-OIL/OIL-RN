@@ -15,10 +15,10 @@ import { BlurView } from '@react-native-community/blur';
 const { width } = Dimensions.get('window');
 
 interface TaskModelProps {
-  taskTitle: string;
-  completionDate: string;
-  recordImageUrl: null;
-  recordContent: string;
+  taskTitle?: string;
+  completionDate?: string;
+  recordImageUrl?: string | null;
+  recordContent?: string;
   onClose: () => void;
 }
 

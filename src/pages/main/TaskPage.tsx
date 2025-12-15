@@ -126,10 +126,10 @@ export default function TaskPage({ taskData }: TaskPageProps) {
       </View>
       {isModalVisible && (
         <TaskModel
-          taskTitle={missionDetail.missionContent}
-          completionDate={missionDetail.completedAt}
-          recordImageUrl={missionDetail.resultImageUrl}
-          recordContent={missionDetail.resultText}
+          taskTitle={missionDetail?.missionContent}
+          completionDate={missionDetail?.completedAt}
+          recordImageUrl={missionDetail?.resultImageUrl}
+          recordContent={missionDetail?.resultText}
           onClose={closeModal}
         />
       )}
