@@ -14,10 +14,12 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
 type TaskPageRouteProp = RouteProp<RootStackParamList, 'BottomTabNavigator'>;
+type TaskPageProps = {
+  taskData: any;
+  taskSuccess: boolean;
+};
 
-export default function TaskPage() {
-  const route = useRoute<TaskPageRouteProp>();
-  const { taskSuccess } = route.params || {};
+export default function TaskPage({ taskData, taskSuccess }: TaskPageProps) {
   const navigation = useNavigation<Nav>();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [completedList, setCompletedList] = useState<
@@ -29,6 +31,8 @@ export default function TaskPage() {
     resultImageUrl: null;
     completedAt: string;
   }>({});
+
+  console.log('taskData333', taskData);
 
   useEffect(() => {
     const fetchCompletedList = async () => {
@@ -94,7 +98,7 @@ export default function TaskPage() {
             <Text style={style.todayTaskText}>오늘의 과제</Text>
             <View style={style.todayTaskContent}>
               <Image source={taskSuccess ? IMAGES.checkGreen : IMAGES.check} />
-              <Text>바람 느끼기</Text>
+              <Text>{taskData.missionContent}</Text>
             </View>
           </View>
           {/*완료한 과제 */}

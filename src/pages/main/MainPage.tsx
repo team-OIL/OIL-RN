@@ -22,8 +22,12 @@ type Advice = {
   authorProfile: string;
   message: string;
 };
+type TaskPageProps = {
+  taskData: any;
+  taskSuccess: boolean;
+};
 
-const MainPage = () => {
+const MainPage = ({ taskData }: TaskPageProps) => {
   const { second, setSecond, isPaused, setIsPaused, reset } = useTimer(300);
   const route = useRoute<MainPageRouteProp>();
   const { taskSuccess } = route.params || {};
@@ -38,6 +42,8 @@ const MainPage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [advice, setAdvice] = useState<Advice | null>(null);
+
+  console.log('taskData', taskData);
 
   useEffect(() => {
     const fetchAdvice = async () => {
@@ -138,7 +144,9 @@ const MainPage = () => {
                 <Text style={styles.subText}>과제를 완료하셨군요.</Text>
                 <Text style={styles.subText}>당신의 색을 찾고있습니다.</Text>
               </View>
-              <Text style={styles.doneText}>바람 느끼기 완료</Text>
+              <Text style={styles.doneText}>
+                {taskData?.missionContent} 완료
+              </Text>
             </View>
           </LinearGradient>
         </View>
@@ -182,7 +190,9 @@ const MainPage = () => {
 
           {/* 명언/메시지 영역 */}
           <View style={styles.quoteBox}>
-            <Text style={styles.quoteText}>{advice?.message} - {advice?.author}</Text>
+            <Text style={styles.quoteText}>
+              {advice?.message} - {advice?.author}
+            </Text>
           </View>
         </View>
         {/* 2. 메인 컨텐츠 영역 */}
@@ -195,7 +205,7 @@ const MainPage = () => {
           <Text style={styles.todayTaskLabel}>{litleTitle()}</Text>
           <Text style={styles.taskName}>
             {taskStage === 'idle' || taskStage === 'progress'
-              ? '바람 느끼기'
+              ? taskData?.missionContent
               : '누르기'}
           </Text>
 

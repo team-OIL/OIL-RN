@@ -43,7 +43,7 @@ const Star = ({
       translateY.value = withTiming(
         -CIRCLE_SIZE,
         {
-          duration: second * 10,
+          duration: second * 1450,
           easing: Easing.out(Easing.ease),
         },
         finished => {
