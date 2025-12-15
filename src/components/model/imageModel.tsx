@@ -18,11 +18,12 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 interface ImgModelProps {
   onClose: () => void;
   setTaskStage: (stage: TaskStage) => void;
+  taskData: any;
 }
 
 const PlusIcon = () => <Text style={modalStyles.plusIcon}>+</Text>;
 
-const ImgModel = ({ onClose, setTaskStage }: ImgModelProps) => {
+const ImgModel = ({ onClose, setTaskStage, taskData }: ImgModelProps) => {
   const [imageUrl, setImageUrl] = useState('');
   const [content, setContent] = useState('');
 
@@ -32,9 +33,13 @@ const ImgModel = ({ onClose, setTaskStage }: ImgModelProps) => {
       if (!auth) return;
 
       const { accessToken } = JSON.parse(auth);
+
+      const savedId = await EncryptedStorage.getItem('userMissionId');
+      const userMissionId = savedId ? JSON.parse(savedId) : null;
+      console.log('userMissionId', userMissionId);
       completeApi({
         accessToken,
-        missionId: 0,
+        usermissionid: Number(userMissionId),
         resultText: content,
         resultImageUrl: imageUrl,
       });
@@ -85,7 +90,9 @@ const ImgModel = ({ onClose, setTaskStage }: ImgModelProps) => {
           <Text style={modalStyles.instructionText}>
             과제를 완료했습니다.{'\n'}오늘의 추억을 사진과 글로 남겨주세요.
           </Text>
-          <Text style={modalStyles.taskTitle}>바람 느끼기 완료</Text>
+          <Text style={modalStyles.taskTitle}>
+            {taskData.missionContent} 완료
+          </Text>
         </View>
 
         <View style={modalStyles.card}>

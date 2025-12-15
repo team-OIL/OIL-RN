@@ -2,14 +2,14 @@ import { api } from '../axios';
 
 interface CompleteApi {
   accessToken: string;
-  missionId: number;
+  usermissionid: number;
   resultText: string;
   resultImageUrl: string;
 }
 
 export const completeApi = ({
   accessToken,
-  missionId,
+  usermissionid,
   resultText,
   resultImageUrl,
 }: CompleteApi) => {
@@ -20,6 +20,6 @@ export const completeApi = ({
     resultText,
     resultImageUrl,
   };
-  console.log('completedList', data, missionId, accessToken);
-  return api.post(`/missions/${missionId}/complete`, data, { headers });
+  console.log('completedList', data, usermissionid, accessToken);
+  return api.post(`/missions/${usermissionid}/complete`, data, { headers });
 };

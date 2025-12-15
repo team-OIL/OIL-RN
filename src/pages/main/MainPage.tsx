@@ -43,8 +43,6 @@ const MainPage = ({ taskData }: TaskPageProps) => {
 
   const [advice, setAdvice] = useState<Advice | null>(null);
 
-  console.log('taskData', taskData);
-
   useEffect(() => {
     const fetchAdvice = async () => {
       try {
@@ -168,7 +166,11 @@ const MainPage = ({ taskData }: TaskPageProps) => {
         >
           <View style={styles.modalOverlay}>
             {/* PostCompletionScreen에 닫기 함수 전달 */}
-            <ImgModel onClose={closeModal} setTaskStage={setTaskStage} />
+            <ImgModel
+              onClose={closeModal}
+              setTaskStage={setTaskStage}
+              taskData={taskData}
+            />
           </View>
         </Modal>
       </>

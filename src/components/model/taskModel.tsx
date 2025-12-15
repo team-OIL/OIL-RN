@@ -36,7 +36,7 @@ const TaskModel: React.FC<TaskModelProps> = ({
     recordImageUrl,
     recordContent,
   );
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(true);
 
   return (
     <Modal
@@ -66,7 +66,7 @@ const TaskModel: React.FC<TaskModelProps> = ({
             <View style={styles.card}>
               <View style={styles.imageWrapper}>
                 <Image
-                  source={{ uri: recordImageUrl }}
+                  source={recordImageUrl ? { uri: recordImageUrl } : null}
                   style={styles.image}
                   resizeMode="cover"
                 />
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 15,
-    backgroundColor: '#ff0000ff',
+    backgroundColor: '#F0F0F0',
   },
   image: {
     width: '100%',

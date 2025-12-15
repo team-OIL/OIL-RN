@@ -69,7 +69,7 @@ export default function TaskPage({ taskData, taskSuccess }: TaskPageProps) {
       resultImageUrl: missionDetailResponse.data.resultImageUrl,
       resultText: missionDetailResponse.data.resultText,
     });
-    setIsModalVisible(true);
+    openModal();
   };
 
   const completedTaskList = completedList.slice(0, 5);
@@ -98,7 +98,7 @@ export default function TaskPage({ taskData, taskSuccess }: TaskPageProps) {
             <Text style={style.todayTaskText}>오늘의 과제</Text>
             <View style={style.todayTaskContent}>
               <Image source={taskSuccess ? IMAGES.checkGreen : IMAGES.check} />
-              <Text>{taskData.missionContent}</Text>
+              <Text>{taskData?.missionContent}</Text>
             </View>
           </View>
           {/*완료한 과제 */}
@@ -219,7 +219,7 @@ const style = StyleSheet.create({
   completedTaskContent: {
     flexDirection: 'column',
     gap: 10,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffffff',
   },
   completedTaskContentItem: {
     flexDirection: 'row',
