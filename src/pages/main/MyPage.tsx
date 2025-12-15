@@ -20,6 +20,7 @@ type Advice = {
 export default function MyPage() {
   const navigation = useNavigation<Nav>();
   const [advice, setAdvice] = useState<Advice | null>(null);
+  const [name, setName] = useState('');
 
   const logout = async () => {
     try {
@@ -37,19 +38,32 @@ export default function MyPage() {
   };
 
   useEffect(() => {
-    const fetchAdvice = async () => {
-      try {
-        const response = await adviceApi();
-        const adviceData: Advice = response.data;
-        console.log('advice', adviceData);
-        setAdvice(adviceData);
-      } catch (error) {
-        console.log('API 호출 에러:', error);
-      }
-    };
-
+    fetchNickname();
     fetchAdvice();
   }, []);
+
+  const fetchNickname = async () => {
+    try {
+      const auth = await EncryptedStorage.getItem('auth');
+      if (!auth) return;
+      const { nickname } = JSON.parse(auth);
+      setName(nickname);
+      console.log('nickname', nickname);
+    } catch (error) {
+      console.log('닉네임 가져오기 실패:', error);
+    }
+  };
+
+  const fetchAdvice = async () => {
+    try {
+      const response = await adviceApi();
+      const adviceData: Advice = response.data;
+      console.log('advice', adviceData);
+      setAdvice(adviceData);
+    } catch (error) {
+      console.log('API 호출 에러:', error);
+    }
+  };
 
   return (
     <View style={style.safeArea}>
@@ -65,7 +79,7 @@ export default function MyPage() {
         <View style={style.mainContent}>
           <Image source={IMAGES.icon} />
           <Text style={style.mainContentText}>안녕하세요,</Text>
-          <Text style={style.mainContentText}>이건희님</Text>
+          <Text style={style.mainContentText}>{name}님</Text>
         </View>
 
         <View style={style.quoteBoxZone}>

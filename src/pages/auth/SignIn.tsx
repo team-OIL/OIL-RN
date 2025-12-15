@@ -46,6 +46,7 @@ function SignIn() {
           JSON.stringify({
             accessToken: response.data.accessToken,
             refreshToken: response.data.refreshToken,
+            nickname: response.data.nickname,
           }),
         );
         const savedAccessToken = await EncryptedStorage.getItem('auth');
