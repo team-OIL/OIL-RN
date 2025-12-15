@@ -28,9 +28,9 @@ export default function TaskPage({ taskData }: TaskPageProps) {
   const [missionDetail, setMissionDetail] = useState<{
     missionContent: string;
     resultText: string;
-    resultImageUrl: null;
+    resultImageUrl: string | null;
     completedAt: string;
-  }>({});
+  } | null>(null);
 
   useEffect(() => {
     fetchCompletedList();
