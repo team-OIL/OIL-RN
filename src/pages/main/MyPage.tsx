@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Alert, Pressable } from 'react-native';
 import { IMAGES } from '../../assets';
 import { Image } from 'react-native';
@@ -8,11 +8,19 @@ import type { RootStackParamList } from '../../../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { logoutApi } from '../../api/auth/LogoutApi';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import { adviceApi } from '../../api/advice/adviceApi';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
+type Advice = {
+  author: string;
+  authorProfile: string;
+  message: string;
+};
 
 export default function MyPage() {
   const navigation = useNavigation<Nav>();
+  const [advice, setAdvice] = useState<Advice | null>(null);
+
   const logout = async () => {
     try {
       const auth = await EncryptedStorage.getItem('auth');
@@ -27,6 +35,21 @@ export default function MyPage() {
       console.log('서버 로그아웃 실패, 로컬 삭제 진행');
     }
   };
+
+  useEffect(() => {
+    const fetchAdvice = async () => {
+      try {
+        const response = await adviceApi();
+        const adviceData: Advice = response.data;
+        console.log('advice', adviceData);
+        setAdvice(adviceData);
+      } catch (error) {
+        console.log('API 호출 에러:', error);
+      }
+    };
+
+    fetchAdvice();
+  }, []);
 
   return (
     <View style={style.safeArea}>
@@ -48,7 +71,7 @@ export default function MyPage() {
         <View style={style.quoteBoxZone}>
           <View style={style.quoteBox}>
             <Text style={style.quoteText}>
-              아름다운 사람이 머문 자리는 자리도 아름답다. - 남자 화장실 -
+              {advice?.message} - {advice?.author}
             </Text>
           </View>
         </View>
@@ -109,7 +132,8 @@ const style = StyleSheet.create({
     maxWidth: '90%',
   },
   quoteText: {
-    fontSize: 12,
+    fontSize: 16,
+    fontWeight: '600',
     color: '#555',
   },
   buttonZone: {
