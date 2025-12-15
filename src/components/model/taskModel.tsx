@@ -55,8 +55,10 @@ const TaskModel: React.FC<TaskModelProps> = ({
       </Pressable>
       <View style={styles.modalWrapper}>
         <View style={styles.header}>
-          <Text style={styles.taskTitle}>{taskTitle} 완료</Text>
-          <Text style={styles.completionDate}>{completionDate}</Text>
+          {taskTitle && <Text style={styles.taskTitle}>{taskTitle} 완료</Text>}
+          {completionDate && (
+            <Text style={styles.completionDate}>{completionDate}</Text>
+          )}
         </View>
         <View style={styles.container}>
           <ScrollView
@@ -75,7 +77,9 @@ const TaskModel: React.FC<TaskModelProps> = ({
               <View style={styles.contentArea}>
                 <Text style={styles.contentLabel}>내용</Text>
                 <View style={styles.contentDisplayBox}>
-                  <Text style={styles.contentText}>{recordContent}</Text>
+                  {recordContent && (
+                    <Text style={styles.contentText}>{recordContent}</Text>
+                  )}
                 </View>
               </View>
             </View>

@@ -101,7 +101,8 @@ export default function TaskPage({ taskData }: TaskPageProps) {
               <Text>
                 {taskData
                   ? taskData?.missionContent
-                  : completedList[0]?.missionTitle}
+                  : completedList[0]?.missionTitle ??
+                    '진행 중인 과제가 없습니다.'}
               </Text>
             </View>
           </View>
