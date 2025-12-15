@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker';
 import { TaskStage } from '../../../types/TaskStage';
+import { completeApi } from '../../api/Mission/complete';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 interface ImgModelProps {
   onClose: () => void;
@@ -24,10 +26,24 @@ const ImgModel = ({ onClose, setTaskStage }: ImgModelProps) => {
   const [imageUrl, setImageUrl] = useState('');
   const [content, setContent] = useState('');
 
-  const handleComplete = () => {
-    console.log('기록 저장 및 완료');
-    setTaskStage('idle');
-    onClose();
+  const handleComplete = async () => {
+    try {
+      const auth = await EncryptedStorage.getItem('auth');
+      if (!auth) return;
+
+      const { accessToken } = JSON.parse(auth);
+      completeApi({
+        accessToken,
+        missionId: 0,
+        resultText: content,
+        resultImageUrl: imageUrl,
+      });
+      console.log('기록 저장 및 완료');
+      setTaskStage('idle');
+      onClose();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleAddImage = () => {
