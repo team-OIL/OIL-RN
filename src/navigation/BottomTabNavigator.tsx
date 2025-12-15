@@ -43,11 +43,12 @@ const BottomTabNavigator = () => {
         setTaskData(res.data);
         console.log('today', res.data);
       } catch (err: any) {
-        if (err.response.status === 404) {
+        if (err.response?.status === 404) {
           console.log('404');
           setTaskData(null);
+        } else {
+          console.log(err);
         }
-        console.log(err);
       }
     };
 

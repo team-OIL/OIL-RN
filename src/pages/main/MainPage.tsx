@@ -48,9 +48,9 @@ const MainPage = ({ taskData }: TaskPageProps) => {
   const [missionDetail, setMissionDetail] = useState<{
     missionContent: string;
     resultText: string;
-    resultImageUrl: null;
+    resultImageUrl: string | null;
     completedAt: string;
-  }>({});
+  } | null>(null);
 
   const minutes = Math.floor(second / 60);
   const seconds = second % 60;
@@ -139,21 +139,25 @@ const MainPage = ({ taskData }: TaskPageProps) => {
   const completedTaskList = completedList.slice(0, 1);
 
   const onClickModel = async (userMissionId: number) => {
-    const auth = await EncryptedStorage.getItem('auth');
-    if (!auth) return;
-    const { accessToken } = JSON.parse(auth);
+    try {
+      const auth = await EncryptedStorage.getItem('auth');
+      if (!auth) return;
+      const { accessToken } = JSON.parse(auth);
 
-    const missionDetailResponse = await missionDetailApi({
-      accessToken,
-      userMissionId,
-    });
-    setMissionDetail({
-      missionContent: missionDetailResponse.data.missionContent,
-      completedAt: missionDetailResponse.data.completedAt,
-      resultImageUrl: missionDetailResponse.data.resultImageUrl,
-      resultText: missionDetailResponse.data.resultText,
-    });
-    openModal();
+      const missionDetailResponse = await missionDetailApi({
+        accessToken,
+        userMissionId,
+      });
+      setMissionDetail({
+        missionContent: missionDetailResponse.data.missionContent,
+        completedAt: missionDetailResponse.data.completedAt,
+        resultImageUrl: missionDetailResponse.data.resultImageUrl,
+        resultText: missionDetailResponse.data.resultText,
+      });
+      openModal();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {

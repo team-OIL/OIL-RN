@@ -16,7 +16,7 @@ type taskData = {
   missionContent: string;
 };
 type TaskPageProps = {
-  taskData: taskData;
+  taskData: taskData | null;
 };
 
 export default function TaskPage({ taskData }: TaskPageProps) {
