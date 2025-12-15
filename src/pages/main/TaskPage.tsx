@@ -13,7 +13,6 @@ import { missionDetailApi } from '../../api/Mission/missionDetail';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
-type TaskPageRouteProp = RouteProp<RootStackParamList, 'BottomTabNavigator'>;
 type TaskPageProps = {
   taskData: any;
   taskSuccess: boolean;

@@ -46,7 +46,11 @@ const BottomTabNavigator = () => {
           'userMissionId',
           JSON.stringify(res.data.userMissionId),
         );
-      } catch (err) {
+      } catch (err: any) {
+        if (err.response.status === 404) {
+          console.log('404');
+          setTaskData(null);
+        }
         console.log(err);
       }
     };

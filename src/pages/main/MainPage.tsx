@@ -14,6 +14,10 @@ import { TaskStage } from '../../../types/TaskStage';
 import ImgModel from '../../components/model/imageModel';
 import { BlurView } from '@react-native-community/blur';
 import { adviceApi } from '../../api/advice/adviceApi';
+import { missionDetailApi } from '../../api/Mission/missionDetail';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import TaskModel from '../../components/model/taskModel';
+import { completedListApi } from '../../api/Mission/completedList';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
 type MainPageRouteProp = RouteProp<RootStackParamList, 'BottomTabNavigator'>;
@@ -33,6 +37,16 @@ const MainPage = ({ taskData }: TaskPageProps) => {
   const { taskSuccess } = route.params || {};
   const navigation = useNavigation<Nav>();
   const [taskStage, setTaskStage] = useState<TaskStage>('idle');
+
+  const [completedList, setCompletedList] = useState<
+    { userMissionId: number; missionTitle: string }[]
+  >([]);
+  const [missionDetail, setMissionDetail] = useState<{
+    missionContent: string;
+    resultText: string;
+    resultImageUrl: null;
+    completedAt: string;
+  }>({});
 
   const minutes = Math.floor(second / 60);
   const seconds = second % 60;
@@ -83,6 +97,7 @@ const MainPage = ({ taskData }: TaskPageProps) => {
       return '과제를 해결 하셨으면 빛나는 행성을 눌러주세요';
     if (taskStage === 'progress')
       return '빛이 끝날 때 까지 과제를 진행해주세요.';
+    if (!taskData) return '다음 과제를 기다려주세요.';
     return '오늘의 과제';
   };
 
@@ -116,6 +131,43 @@ const MainPage = ({ taskData }: TaskPageProps) => {
       return () => clearTimeout(timer);
     }
   }, [taskStage]);
+
+  const completedTaskList = completedList.slice(0, 1);
+
+  const onClickModel = async (userMissionId: number) => {
+    const auth = await EncryptedStorage.getItem('auth');
+    if (!auth) return;
+    const { accessToken } = JSON.parse(auth);
+
+    const missionDetailResponse = await missionDetailApi({
+      accessToken,
+      userMissionId,
+    });
+    setMissionDetail({
+      missionContent: missionDetailResponse.data.missionContent,
+      completedAt: missionDetailResponse.data.completedAt,
+      resultImageUrl: missionDetailResponse.data.resultImageUrl,
+      resultText: missionDetailResponse.data.resultText,
+    });
+    openModal();
+  };
+
+  useEffect(() => {
+    const fetchCompletedList = async () => {
+      try {
+        const auth = await EncryptedStorage.getItem('auth');
+        if (!auth) return;
+        const { accessToken } = JSON.parse(auth);
+        const response = await completedListApi({ accessToken });
+        setCompletedList(response.data);
+
+        console.log('completedList', response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchCompletedList();
+  }, []);
 
   let content;
 
@@ -173,6 +225,72 @@ const MainPage = ({ taskData }: TaskPageProps) => {
             />
           </View>
         </Modal>
+      </>
+    );
+  } else if (!taskData) {
+    content = (
+      <>
+        <View style={styles.header}>
+          {/* 상태바 영역 - 실제 앱에서는 시스템 상태바를 사용하거나 커스텀합니다. */}
+          <View style={styles.statusBarPlaceholder}>
+            <Image source={IMAGES.logo} />
+            {/* 우측 알림 아이콘 */}
+            <Pressable
+              onPress={() => navigation.navigate('AlarmPage', { taskSuccess })}
+            >
+              <Image source={IMAGES.alarm} />
+            </Pressable>
+          </View>
+
+          {/* 명언/메시지 영역 */}
+          <View style={styles.quoteBox}>
+            <Text style={styles.quoteText}>
+              {advice?.message} - {advice?.author}
+            </Text>
+          </View>
+        </View>
+        {/* 2. 메인 컨텐츠 영역 */}
+        <LinearGradient
+          colors={['#FFFFFF', '#E1E1E1']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.mainContent}
+        >
+          <Text style={styles.todayTaskLabel}>{litleTitle()}</Text>
+          <Text style={styles.taskName}>당신의 색</Text>
+
+          <Star
+            taskStage={taskStage}
+            setTaskStage={setTaskStage}
+            second={second}
+          />
+
+          <View style={styles.buttonZone}>
+            <Text>완료한 과제</Text>
+            {completedTaskList.map(item => (
+              <Pressable
+                key={item.userMissionId}
+                onPress={() => onClickModel(item.userMissionId)}
+              >
+                <View style={styles.completedTaskContent}>
+                  <View style={styles.completedTaskContentItem}>
+                    <Image source={IMAGES.checkGreen} />
+                    <Text>{item.missionTitle}</Text>
+                  </View>
+                </View>
+              </Pressable>
+            ))}
+          </View>
+        </LinearGradient>
+        {isModalVisible && (
+          <TaskModel
+            taskTitle={missionDetail.missionContent}
+            completionDate={missionDetail.completedAt}
+            recordImageUrl={missionDetail.resultImageUrl}
+            recordContent={missionDetail.resultText}
+            onClose={closeModal}
+          />
+        )}
       </>
     );
   } else {
@@ -347,6 +465,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 15,
+  },
+  completedTaskContent: {
+    flexDirection: 'column',
+    gap: 10,
+    backgroundColor: '#ffffffff',
+  },
+  completedTaskContentItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 12,
+    marginBottom: 5,
+    backgroundColor: '#ffffffff',
+    borderRadius: 30,
   },
 });
 
