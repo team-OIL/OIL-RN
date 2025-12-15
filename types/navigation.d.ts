@@ -2,7 +2,7 @@ export type RootStackParamList = {
   SignIn: { name?: string };
   SignUp: undefined;
   SignInComplete: { name: string; isTaskStarted: boolean };
-  BottomTabNavigator: { taskSuccess?: boolean };
+  BottomTabNavigator: { taskSuccess?: boolean; taskData?: any };
   AlarmSettings: { email: string; password: string };
   NicknamePage: {
     email: string;

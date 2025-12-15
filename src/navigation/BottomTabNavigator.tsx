@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Text, Image, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MainPage from '../pages/main/MainPage';
@@ -6,6 +6,8 @@ import TaskPage from '../pages/main/TaskPage';
 import MyPage from '../pages/main/MyPage';
 import { IMAGES } from '../assets';
 import { useState } from 'react';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import { todayApi } from '../api/Mission/todayapi';
 
 const Tab = createBottomTabNavigator();
 
@@ -22,6 +24,31 @@ const BottomTabNavigator = () => {
   };
 
   const [taskSuccess, setTaskSuccess] = useState(true);
+  const [taskData, setTaskData] = useState<{
+    userMissionId: number;
+    missionContent: string;
+    durationTime: number;
+    assignedDate: string;
+    completed: boolean;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const auth = await EncryptedStorage.getItem('auth');
+        if (!auth) return;
+
+        const { accessToken } = JSON.parse(auth);
+        const res = await todayApi({ accessToken });
+        setTaskData(res.data);
+        console.log('today', res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <Tab.Navigator
@@ -50,8 +77,9 @@ const BottomTabNavigator = () => {
     >
       <Tab.Screen
         name="Home"
-        component={MainPage}
-        initialParams={{ taskSuccess }}
+        children={props => (
+          <MainPage taskSuccess={taskSuccess} taskData={taskData} {...props} />
+        )}
         options={{
           tabBarLabel: ({ focused }) => (
             <Text style={focused ? focusedFontStyle : unFocusedFontStyle}>
@@ -66,8 +94,9 @@ const BottomTabNavigator = () => {
 
       <Tab.Screen
         name="Task"
-        component={TaskPage}
-        initialParams={{ taskSuccess }}
+        children={props => (
+          <TaskPage taskData={taskData} taskSuccess={taskSuccess} {...props} />
+        )}
         options={{
           tabBarLabel: ({ focused }) => (
             <Text style={focused ? focusedFontStyle : unFocusedFontStyle}>
