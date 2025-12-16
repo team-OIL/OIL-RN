@@ -80,6 +80,13 @@ function ChangeAlarmPage() {
   };
 
   const onClickChangeAlarm = async () => {
+    if (!accessToken) {
+      Alert.alert(
+        '오류',
+        '인증 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.',
+      );
+      return;
+    }
     try {
       await onChangeTime();
       await onChangeAlarmSetting();
