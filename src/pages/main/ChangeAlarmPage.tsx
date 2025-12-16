@@ -4,6 +4,7 @@ import DismissKeyboardView from '../../components/DismissKeyboardView';
 import TimePickerScreen from '../../components/Time/TimePickerScreen';
 import Button from '../../components/button/button';
 import { updateMissionReceiveTime } from '../../api/alarm/updateMissionReceiveTime';
+import { updateAlarmSetting } from '../../api/alarm/updateAlarmSetting';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useNavigation } from '@react-navigation/native';
 
@@ -77,6 +78,15 @@ function ChangeAlarmPage() {
     }
   };
 
+  const onClickChangeAlarm = async () => {
+    try {
+      await onChangeTime();
+      await onChangeAlarmSetting();
+    } catch (e) {
+      console.log('Error in onClickChangeAlarm:', e);
+    }
+  };
+
   const onChangeTime = async () => {
     try {
       await updateMissionReceiveTime({
@@ -93,6 +103,28 @@ function ChangeAlarmPage() {
     } catch (e) {
       console.log('에러 발생', e);
       Alert.alert('오류', '알림 시간 변경에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  const onChangeAlarmSetting = async () => {
+    try {
+      await updateAlarmSetting({
+        accessToken,
+        alarmEnabled: isChangeAgreedToReceive,
+      });
+      const alarmData = {
+        isChangeAgreedToReceive,
+        TastTime: ChangeTastTime,
+      };
+      await EncryptedStorage.setItem('alarm', JSON.stringify(alarmData));
+      Alert.alert('알림', '푸시 알람 수신 설정이 변경되었습니다.');
+      navigation.goBack();
+    } catch (e) {
+      console.log('에러 발생', e);
+      Alert.alert(
+        '오류',
+        '푸시 알람 수신 설정 변경에 실패했습니다. 다시 시도해주세요.',
+      );
     }
   };
 
@@ -149,7 +181,7 @@ function ChangeAlarmPage() {
         </View>
 
         <View style={styles.buttonZone}>
-          <Button label="변경" onPress={onChangeTime} />
+          <Button label="변경" onPress={onClickChangeAlarm} />
         </View>
       </View>
     </DismissKeyboardView>
