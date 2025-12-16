@@ -10,6 +10,7 @@ import MaskedTitle from '../../components/Masked/MaskedTitle';
 import type { RootStackParamList } from '../../../types/navigation';
 import { loginApi } from '../../api/auth/LoginApi';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import { getFcmToken } from '../../services/pushToken.service';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
 
@@ -49,8 +50,10 @@ function SignIn() {
             nickname: response.data.nickname,
           }),
         );
+        const deviceToken = await getFcmToken();
+        console.log('deviceToken', deviceToken);
         const savedAccessToken = await EncryptedStorage.getItem('auth');
-        console.log(savedAccessToken);
+        console.log('savedAccessToken', savedAccessToken);
         navigation.navigate('SignInComplete', {
           nickname,
           isTaskStarted: true,
