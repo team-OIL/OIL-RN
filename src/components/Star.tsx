@@ -10,12 +10,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import { TaskStage } from '../../types/TaskStage';
 
+interface TaskData {
+  durationTime: number;
+}
 interface StarProps {
   paddingBottom?: number;
   taskStage?: TaskStage;
   second?: number;
   setTaskStage?: React.Dispatch<React.SetStateAction<TaskStage>>;
-  taskData?: any;
+  taskData?: TaskData;
 }
 
 const CIRCLE_SIZE = 250;

@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 
 function ChangeAlarmPage() {
   const navigation = useNavigation();
-  const [isAgreedToReceive, setIsAgreedToReceive] = useState(false);
+  const [isChangeAgreedToReceive, setIsChangeAgreedToReceive] = useState(false);
   const [accessToken, setAccessToken] = useState('');
   const [baseTastTime, setBaseTastTime] = useState('');
   const [ampm, setAmpm] = useState('오후');
@@ -48,8 +48,13 @@ function ChangeAlarmPage() {
   useEffect(() => {
     const loadAgreement = async () => {
       const value = await EncryptedStorage.getItem('alarm');
-      const { isAgreedToReceive, TastTime } = value ? JSON.parse(value) : false;
-      setIsAgreedToReceive(isAgreedToReceive);
+      const { isAgreedToReceive, TastTime } = value
+        ? JSON.parse(value)
+        : {
+            isAgreedToReceive: isChangeAgreedToReceive,
+            TastTime: ChangeTastTime,
+          };
+      setIsChangeAgreedToReceive(isAgreedToReceive);
       setBaseTastTime(TastTime);
     };
     loadAgreement();
@@ -57,7 +62,15 @@ function ChangeAlarmPage() {
 
   // 알림 수신 동의 토글
   const toggleSwitch = async () => {
-    setIsAgreedToReceive(prevState => !prevState);
+    const newState = !isChangeAgreedToReceive;
+    setIsChangeAgreedToReceive(newState);
+
+    // Persist to storage
+    const alarmData = {
+      isAgreedToReceive: newState,
+      TastTime: ChangeTastTime,
+    };
+    await EncryptedStorage.setItem('alarm', JSON.stringify(alarmData));
   };
 
   const onChangeTime = async () => {
@@ -66,10 +79,16 @@ function ChangeAlarmPage() {
         accessToken,
         MissionTime: ChangeTastTime,
       });
+      const alarmData = {
+        isChangeAgreedToReceive,
+        TastTime: ChangeTastTime,
+      };
+      await EncryptedStorage.setItem('alarm', JSON.stringify(alarmData));
       Alert.alert('알림', '알림 시간이 변경되었습니다.');
       navigation.goBack();
     } catch (e) {
       console.log('에러 발생', e);
+      Alert.alert('오류', '알림 시간 변경에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
@@ -89,9 +108,9 @@ function ChangeAlarmPage() {
             {/* AOS 표준 색상: 활성화 시 기본 색상, 비활성화 시 회색 계열 */}
             <Switch
               trackColor={{ false: '#e0e0e0', true: '#a0a0a0' }}
-              thumbColor={isAgreedToReceive ? '#363636' : '#f4f3f4'}
+              thumbColor={isChangeAgreedToReceive ? '#363636' : '#f4f3f4'}
               onValueChange={toggleSwitch}
-              value={isAgreedToReceive}
+              value={isChangeAgreedToReceive}
             />
           </View>
         </View>
@@ -100,7 +119,7 @@ function ChangeAlarmPage() {
           <Text
             style={[
               styles.sectionTitle,
-              !isAgreedToReceive && styles.disabledText,
+              !isChangeAgreedToReceive && styles.disabledText,
             ]}
           >
             알림 시간 설정
@@ -108,7 +127,7 @@ function ChangeAlarmPage() {
           <Text
             style={[
               styles.descriptionText,
-              !isAgreedToReceive && styles.disabledText,
+              !isChangeAgreedToReceive && styles.disabledText,
             ]}
           >
             푸시 알림 수신에 동의하십니까?

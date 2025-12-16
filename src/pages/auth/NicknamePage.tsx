@@ -35,10 +35,14 @@ function NicknamePage({ route }: { route: SignUpRouteProp }) {
         missionTime: TastTime,
         isAlarmEnabled: isAgreedToReceive,
       });
-      await EncryptedStorage.setItem(
-        'alarm',
-        JSON.stringify({ isAgreedToReceive, TastTime }),
-      );
+      try {
+        await EncryptedStorage.setItem(
+          'alarm',
+          JSON.stringify({ isAgreedToReceive, TastTime }),
+        );
+      } catch (e) {
+        console.log('에러 발생', e);
+      }
       navigation.navigate('SignIn', { name: nickname });
     } catch (e) {
       console.log('에러 발생', e);

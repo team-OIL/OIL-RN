@@ -26,8 +26,13 @@ type Advice = {
   authorProfile: string;
   message: string;
 };
+interface TaskData {
+  userMissionId: number;
+  missionContent: string;
+  durationTime: number;
+}
 type TaskPageProps = {
-  taskData: any;
+  taskData: TaskData;
   taskSuccess: boolean;
 };
 
