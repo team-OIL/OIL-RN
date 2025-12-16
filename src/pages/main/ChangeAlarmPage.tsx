@@ -7,6 +7,7 @@ import { updateMissionReceiveTime } from '../../api/alarm/updateMissionReceiveTi
 import { updateAlarmSetting } from '../../api/alarm/updateAlarmSetting';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useNavigation } from '@react-navigation/native';
+import { deleteTokenApi } from '../../api/pushtoken/deleteToken';
 
 function ChangeAlarmPage() {
   const navigation = useNavigation();
@@ -82,6 +83,7 @@ function ChangeAlarmPage() {
     try {
       await onChangeTime();
       await onChangeAlarmSetting();
+      await deleteTokenApi({ accessToken });
     } catch (e) {
       console.log('Error in onClickChangeAlarm:', e);
     }
