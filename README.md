@@ -25,14 +25,6 @@ OIL은 반복되는 일상에 작은 변화를 만드는 일일 미션 서비스
 | 완료 이력 | 완료한 미션 목록과 각 미션의 기록·완료 시점을 조회합니다. |
 | 알림 | 미션 수신 시간과 알림 허용 여부를 변경하고 FCM 푸시를 처리합니다. |
 
-## 실행 화면
-
-<p align="center">
-  <img src="./docs/images/oil-overview.png" alt="OIL의 미션 수행, 기록 작성, 완료 이력 실행 화면" width="820" />
-</p>
-
-왼쪽부터 **미션 완료 후 기록 작성**, **오늘의 미션 수행**, **완료한 미션과 기록 조회** 흐름입니다.
-
 ## 담당 역할과 팀 구성
 
 | 구성원 | 역할 | 담당 범위 |
@@ -51,7 +43,7 @@ OIL은 반복되는 일상에 작은 변화를 만드는 일일 미션 서비스
 | Navigation | React Navigation | 인증 흐름은 Stack, 핵심 화면은 Bottom Tab으로 분리해 화면 구조와 이동 책임을 명확히 했습니다. |
 | HTTP | Axios, React Native Config | 공통 Base URL·timeout을 한 곳에서 관리하고 실행 환경별 API 주소를 코드와 분리했습니다. |
 | Storage | React Native Encrypted Storage | Access Token과 Refresh Token 등 인증 정보를 일반 저장소가 아닌 암호화 저장소에 보관했습니다. |
-| Push | Firebase Cloud Messaging | 알림 권한, 디바이스 토큰 발급·갱신·삭제와 앱 상태별 푸시 처리를 구현하기 위해 사용했습니다. |
+| Push | Firebase Cloud Messaging | 로그인 시 조건부 디바이스 토큰 등록과 포그라운드·알림 진입 상태의 메시지 처리를 구현하기 위해 사용했습니다. |
 | Media | React Native Image Picker | 미션 수행 결과를 기기 갤러리에서 선택하고 기록 화면에서 바로 확인할 수 있도록 사용했습니다. |
 | UI | React Native SVG, Reanimated | 미션 진행도와 상태 변화를 모바일 화면에서 직관적으로 표현하기 위해 사용했습니다. |
 
@@ -77,35 +69,72 @@ OIL은 반복되는 일상에 작은 변화를 만드는 일일 미션 서비스
 
 ### 4. 앱 상태와 사용자 동의를 고려한 푸시 알림
 
-- 문제: 알림 동의 여부, OS 권한, 토큰 갱신, 포그라운드·백그라운드 상태를 각각 처리해야 했습니다.
-- 해결: 알림 동의와 OS 권한을 확인한 뒤 FCM 토큰을 발급하고, 토큰 갱신과 알림 비활성화 시 삭제를 분리했습니다. 포그라운드에서는 알림창을 표시하고, 알림을 눌러 앱을 열었을 때는 Navigation Ref로 관련 화면에 진입하도록 구성했습니다.
-- 결과: 사용자 설정과 앱 생명주기를 반영하는 푸시 처리 기반을 마련했습니다.
+- 문제: 로그인 시 알림 동의와 OS 권한을 확인해야 하고, 실행 중 수신과 알림을 눌러 진입한 경우의 처리가 달랐습니다.
+- 해결: 로그인 성공 후 로컬 알림 동의와 OS 권한이 모두 있을 때만 FCM 토큰을 발급해 서버에 등록했습니다. 포그라운드 메시지는 알림창으로 표시하고, 백그라운드 또는 종료 상태에서 알림을 눌러 진입하면 Navigation Ref를 통해 홈 화면으로 이동하도록 구성했습니다.
+- 결과: 로그인, 푸시 수신, 알림 진입으로 이어지는 현재 앱의 실행 경로를 연결했습니다.
 
 ## 아키텍처와 데이터 흐름
 
 ```mermaid
-flowchart LR
-    U["사용자"] --> N["React Navigation<br/>Stack + Bottom Tab"]
-    N --> P["화면·컴포넌트"]
+flowchart TB
+    APP["App.tsx"] --> STACK["NavigationContainer<br/>Native Stack"]
+    STACK --> AUTH["인증 화면<br/>SignIn / SignUp / 초기 설정"]
+    STACK --> TABS["BottomTabNavigator"]
+    STACK --> SETTINGS["알림 화면<br/>AlarmPage / ChangeAlarmPage"]
+    TABS --> MAIN["MainPage"]
+    TABS --> TASK["TaskPage"]
+    TABS --> MY["MyPage"]
 
-    P --> A["기능별 API 모듈<br/>auth / mission / alarm"]
-    A --> X["Axios Instance<br/>Base URL + timeout"]
-    X --> B["OIL REST API"]
+    AUTH --> AUTH_API["Auth API 모듈"]
+    TABS --> MISSION_API["Mission API 모듈"]
+    MAIN --> MISSION_API
+    TASK --> MISSION_API
+    MY --> AUTH_API
+    SETTINGS --> ALARM_API["Alarm API 모듈"]
+    AUTH_API --> AXIOS["공통 Axios 인스턴스"]
+    MISSION_API --> AXIOS
+    ALARM_API --> AXIOS
+    AXIOS -->|"상대 URL"| BACKEND["OIL REST API"]
 
-    P <--> S["EncryptedStorage<br/>Access·Refresh Token / 알림 동의"]
-    P --> I["Image Picker<br/>미션 기록 이미지"]
+    AUTH <--> STORAGE["EncryptedStorage<br/>auth / alarm"]
+    TABS --> STORAGE
+    MAIN --> STORAGE
+    TASK --> STORAGE
+    MY --> STORAGE
+    SETTINGS <--> STORAGE
 
-    F["Firebase Cloud Messaging"] --> H["Push Hooks·Service"]
-    H --> P
-    P --> E["외부 명언 API"]
+    MAIN --> RECORD["기록 모달"]
+    RECORD --> PICKER["Image Picker"]
+    RECORD --> STORAGE
+    RECORD --> MISSION_API
+
+    MAIN --> ADVICE_API["Advice API 모듈"]
+    MY --> ADVICE_API
+    ADVICE_API --> AXIOS
+    AXIOS -->|"절대 URL"| ADVICE["외부 명언 API"]
+
+    AUTH --> PUSH_SERVICE["getFcmToken"]
+    PUSH_SERVICE --> FCM["Firebase Messaging"]
+    AUTH --> TOKEN_API["Push Token API"]
+    SETTINGS --> TOKEN_API
+    TOKEN_API --> AXIOS
+    FCM --> FOREGROUND["useForegroundPush<br/>Alert 표시"]
+    FCM --> OPENED["onNotificationOpenedApp<br/>getInitialNotification"]
+    OPENED --> STACK
 ```
 
-핵심 데이터 흐름은 다음과 같습니다.
+현재 `main` 브랜치의 실제 데이터 흐름은 다음과 같습니다.
 
-1. 로그인 성공 시 토큰을 암호화 저장소에 보관하고 이후 인증 API 요청에 사용합니다.
-2. 오늘의 미션을 조회해 메인·과제 화면에 전달하고, 수행 결과를 텍스트·이미지와 함께 완료 API로 전송합니다.
-3. 완료 목록을 조회한 뒤 항목 선택 시 상세 API를 호출해 당시 기록을 모달로 표시합니다.
-4. 알림 동의와 권한이 있는 사용자의 FCM 토큰을 서버에 등록하고, 수신한 푸시를 앱 상태에 맞게 표시하거나 화면 이동으로 연결합니다.
+1. **로그인**: `SignIn`이 로그인 API를 호출하고 Access Token, Refresh Token, 닉네임을 `EncryptedStorage.auth`에 저장합니다.
+2. **푸시 토큰 등록**: 로그인 직후 `getFcmToken`이 `EncryptedStorage.alarm`의 동의 여부와 OS 권한을 확인합니다. 조건을 만족하면 FCM 토큰을 받아 Push Token API로 서버에 등록합니다.
+3. **오늘의 미션**: `BottomTabNavigator`가 저장된 Access Token으로 오늘의 미션을 조회하고, 응답을 `MainPage`와 `TaskPage`에 props로 전달합니다.
+4. **미션 완료 기록**: `MainPage`의 로컬 타이머가 완료 상태를 만들면 기록 모달이 텍스트와 기기 이미지 URI를 받습니다. 모달은 저장된 `auth`와 `missions` 값을 읽어 완료 API를 호출합니다.
+5. **완료 이력**: `MainPage`와 `TaskPage`가 완료 목록 API를 호출하고, 항목 선택 시 상세 API의 응답을 기록 모달에 표시합니다.
+6. **명언**: `MainPage`와 `MyPage`가 Advice API 모듈을 호출합니다. 이 모듈은 공통 Axios 인스턴스에 외부 API의 절대 URL을 전달합니다.
+7. **푸시 수신**: 포그라운드 메시지는 `useForegroundPush`가 알림창으로 표시합니다. 백그라운드 또는 종료 상태에서 연 알림은 `App.tsx`가 받아 Navigation Ref로 홈 화면에 연결합니다.
+8. **알림 변경**: `ChangeAlarmPage`가 미션 수신 시간과 알림 활성 상태를 서버·로컬 저장소에 반영한 뒤 서버의 Push Token 삭제 API를 호출합니다.
+
+> 현재 코드에서 `usePushToken`의 토큰 갱신 구독, `disablePushToken`의 로컬 FCM 토큰 삭제, `reissueApi`는 앱 실행 경로에 연결되어 있지 않아 위 다이어그램에서 제외했습니다. 또한 기록 완료에 필요한 `EncryptedStorage.missions`를 저장하는 코드는 현재 저장소에서 확인되지 않습니다. 알림 변경 화면은 `isChangeAgreedToReceive`를 저장하지만 푸시 서비스는 `isAgreedToReceive`를 읽으므로 두 흐름의 저장 키도 현재 일치하지 않습니다.
 
 ### 디렉터리 구조
 
