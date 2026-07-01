@@ -75,52 +75,23 @@ OIL은 반복되는 일상에 작은 변화를 만드는 일일 미션 서비스
 
 ## 아키텍처와 데이터 흐름
 
+아래 다이어그램은 앱의 구성을 레이어 단위로 단순화한 개요이며, 실제 호출 순서는 이어지는 데이터 흐름 설명을 기준으로 합니다.
+
 ```mermaid
-flowchart TB
-    APP["App.tsx"] --> STACK["NavigationContainer<br/>Native Stack"]
-    STACK --> AUTH["인증 화면<br/>SignIn / SignUp / 초기 설정"]
-    STACK --> TABS["BottomTabNavigator"]
-    STACK --> SETTINGS["알림 화면<br/>AlarmPage / ChangeAlarmPage"]
-    TABS --> MAIN["MainPage"]
-    TABS --> TASK["TaskPage"]
-    TABS --> MY["MyPage"]
+flowchart LR
+    U["사용자"] --> N["React Navigation<br/>Stack + Bottom Tab"]
+    N --> P["화면·컴포넌트"]
 
-    AUTH --> AUTH_API["Auth API 모듈"]
-    TABS --> MISSION_API["Mission API 모듈"]
-    MAIN --> MISSION_API
-    TASK --> MISSION_API
-    MY --> AUTH_API
-    SETTINGS --> ALARM_API["Alarm API 모듈"]
-    AUTH_API --> AXIOS["공통 Axios 인스턴스"]
-    MISSION_API --> AXIOS
-    ALARM_API --> AXIOS
-    AXIOS -->|"상대 URL"| BACKEND["OIL REST API"]
+    P --> A["기능별 API 모듈<br/>auth / mission / alarm"]
+    A --> X["Axios Instance<br/>Base URL + timeout"]
+    X --> B["OIL REST API"]
 
-    AUTH <--> STORAGE["EncryptedStorage<br/>auth / alarm"]
-    TABS --> STORAGE
-    MAIN --> STORAGE
-    TASK --> STORAGE
-    MY --> STORAGE
-    SETTINGS <--> STORAGE
+    P <--> S["EncryptedStorage<br/>Access·Refresh Token / 알림 동의"]
+    P --> I["Image Picker<br/>미션 기록 이미지"]
 
-    MAIN --> RECORD["기록 모달"]
-    RECORD --> PICKER["Image Picker"]
-    RECORD --> STORAGE
-    RECORD --> MISSION_API
-
-    MAIN --> ADVICE_API["Advice API 모듈"]
-    MY --> ADVICE_API
-    ADVICE_API --> AXIOS
-    AXIOS -->|"절대 URL"| ADVICE["외부 명언 API"]
-
-    AUTH --> PUSH_SERVICE["getFcmToken"]
-    PUSH_SERVICE --> FCM["Firebase Messaging"]
-    AUTH --> TOKEN_API["Push Token API"]
-    SETTINGS --> TOKEN_API
-    TOKEN_API --> AXIOS
-    FCM --> FOREGROUND["useForegroundPush<br/>Alert 표시"]
-    FCM --> OPENED["onNotificationOpenedApp<br/>getInitialNotification"]
-    OPENED --> STACK
+    F["Firebase Cloud Messaging"] --> H["Push Hooks·Service"]
+    H --> P
+    P --> E["외부 명언 API"]
 ```
 
 현재 `main` 브랜치의 실제 데이터 흐름은 다음과 같습니다.
@@ -134,7 +105,7 @@ flowchart TB
 7. **푸시 수신**: 포그라운드 메시지는 `useForegroundPush`가 알림창으로 표시합니다. 백그라운드 또는 종료 상태에서 연 알림은 `App.tsx`가 받아 Navigation Ref로 홈 화면에 연결합니다.
 8. **알림 변경**: `ChangeAlarmPage`가 미션 수신 시간과 알림 활성 상태를 서버·로컬 저장소에 반영한 뒤 서버의 Push Token 삭제 API를 호출합니다.
 
-> 현재 코드에서 `usePushToken`의 토큰 갱신 구독, `disablePushToken`의 로컬 FCM 토큰 삭제, `reissueApi`는 앱 실행 경로에 연결되어 있지 않아 위 다이어그램에서 제외했습니다. 또한 기록 완료에 필요한 `EncryptedStorage.missions`를 저장하는 코드는 현재 저장소에서 확인되지 않습니다. 알림 변경 화면은 `isChangeAgreedToReceive`를 저장하지만 푸시 서비스는 `isAgreedToReceive`를 읽으므로 두 흐름의 저장 키도 현재 일치하지 않습니다.
+> 현재 코드에서 `usePushToken`의 토큰 갱신 구독, `disablePushToken`의 로컬 FCM 토큰 삭제, `reissueApi`는 앱 실행 경로에 연결되어 있지 않습니다. 또한 기록 완료에 필요한 `EncryptedStorage.missions`를 저장하는 코드는 현재 저장소에서 확인되지 않습니다. 알림 변경 화면은 `isChangeAgreedToReceive`를 저장하지만 푸시 서비스는 `isAgreedToReceive`를 읽으므로 두 흐름의 저장 키도 현재 일치하지 않습니다.
 
 ### 디렉터리 구조
 
