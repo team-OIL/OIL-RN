@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Alert, View, StyleSheet } from 'react-native';
+import { Alert, View, StyleSheet, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import DismissKeyboardView from '../../components/DismissKeyboardView';
@@ -18,8 +18,8 @@ type Nav = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
 function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
+  const emailRef = useRef<TextInput | null>(null);
+  const passwordRef = useRef<TextInput | null>(null);
   const navigation = useNavigation<Nav>();
 
   const onChangeEmail = useCallback(
@@ -78,7 +78,7 @@ function SignIn() {
       Alert.alert('알림', '로그인 중 오류가 발생했습니다.');
       console.error(error);
     }
-  }, [email, password]);
+  }, [email, navigation, password]);
 
   const canGoNext = email && password;
 

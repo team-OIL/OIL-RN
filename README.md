@@ -105,7 +105,7 @@ flowchart LR
 7. **푸시 수신**: 포그라운드 메시지는 `useForegroundPush`가 알림창으로 표시합니다. 백그라운드 또는 종료 상태에서 연 알림은 `App.tsx`가 받아 Navigation Ref로 홈 화면에 연결합니다.
 8. **알림 변경**: `ChangeAlarmPage`가 미션 수신 시간과 알림 활성 상태를 서버·로컬 저장소에 반영한 뒤 서버의 Push Token 삭제 API를 호출합니다.
 
-> 현재 코드에서 `usePushToken`의 토큰 갱신 구독, `disablePushToken`의 로컬 FCM 토큰 삭제, `reissueApi`는 앱 실행 경로에 연결되어 있지 않습니다. 또한 기록 완료에 필요한 `EncryptedStorage.missions`를 저장하는 코드는 현재 저장소에서 확인되지 않습니다. 알림 변경 화면은 `isChangeAgreedToReceive`를 저장하지만 푸시 서비스는 `isAgreedToReceive`를 읽으므로 두 흐름의 저장 키도 현재 일치하지 않습니다.
+> `usePushToken`은 앱 시작 시 저장된 로그인 정보와 알림 동의를 확인해 토큰을 동기화하며, 토큰 갱신 시에도 서버 값을 갱신합니다. 알림 비활성화와 로그아웃 시에는 서버 및 로컬 FCM 토큰을 정리합니다. 기록 완료에 필요한 `EncryptedStorage.missions`를 저장하는 코드는 현재 저장소에서 확인되지 않습니다.
 
 ### 디렉터리 구조
 
@@ -161,7 +161,12 @@ API_BASE_URL=https://api.example.com
 FCM을 사용하는 네이티브 빌드에는 플랫폼별 Firebase 설정도 필요합니다.
 
 - Android: `android/app/google-services.json`
-- iOS: Firebase Console에서 받은 `GoogleService-Info.plist`를 Xcode의 OIL 타깃에 추가
+- iOS:
+  1. Xcode OIL 타깃의 `PRODUCT_BUNDLE_IDENTIFIER`와 동일한 Bundle ID로 Firebase iOS 앱을 등록합니다.
+  2. Firebase Console에서 받은 파일을 `ios/OIL/GoogleService-Info.plist`에 둡니다. OIL 타깃의 Resources에는 이 경로가 이미 연결되어 있습니다.
+  3. Apple Developer에서 해당 App ID의 Push Notifications를 활성화하고 APNs 인증 키를 Firebase Console의 Cloud Messaging 설정에 업로드합니다.
+
+`npm run ios`는 빌드 전에 iOS Firebase 파일과 필수 키를 검사합니다. 실제 푸시 수신은 APNs 서명이 필요한 실제 iOS 기기에서 확인해야 합니다.
 
 ### 3. 앱 실행
 
@@ -180,12 +185,12 @@ npm run android
 # iOS
 bundle install
 cd ios
-bundle exec pod install
+bundle exec pod install --repo-update
 cd ..
 npm run ios
 ```
 
-푸시 알림은 Google Play Services를 지원하는 Android 에뮬레이터 또는 실제 기기에서 확인하는 것을 권장합니다.
+푸시 알림은 Google Play Services를 지원하는 Android 에뮬레이터 또는 실제 Android 기기, APNs 프로비저닝이 적용된 실제 iOS 기기에서 확인합니다.
 
 ### 검사 명령
 

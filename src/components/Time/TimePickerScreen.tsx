@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Text, Platform } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, Text } from 'react-native';
 import TimePickerWheel from './TimePickerWheel';
 
 // 항목 높이 및 휠 높이 정의

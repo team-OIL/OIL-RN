@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Text, Image, View } from 'react-native';
+import { Text, Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MainPage from '../pages/main/MainPage';
 import TaskPage from '../pages/main/TaskPage';
@@ -23,7 +23,6 @@ const BottomTabNavigator = () => {
     color: '#888',
   };
 
-  const [taskSuccess, setTaskSuccess] = useState(true);
   const [taskData, setTaskData] = useState<{
     userMissionId: number;
     missionContent: string;
@@ -82,9 +81,7 @@ const BottomTabNavigator = () => {
     >
       <Tab.Screen
         name="Home"
-        children={props => (
-          <MainPage taskSuccess={taskSuccess} taskData={taskData} {...props} />
-        )}
+        children={props => <MainPage taskData={taskData} {...props} />}
         options={{
           tabBarLabel: ({ focused }) => (
             <Text style={focused ? focusedFontStyle : unFocusedFontStyle}>
@@ -99,9 +96,7 @@ const BottomTabNavigator = () => {
 
       <Tab.Screen
         name="Task"
-        children={props => (
-          <TaskPage taskData={taskData} taskSuccess={taskSuccess} {...props} />
-        )}
+        children={props => <TaskPage taskData={taskData} {...props} />}
         options={{
           tabBarLabel: ({ focused }) => (
             <Text style={focused ? focusedFontStyle : unFocusedFontStyle}>

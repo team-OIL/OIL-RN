@@ -5,15 +5,12 @@ import { useNavigation } from '@react-navigation/native';
 import type { RootStackParamList } from '../../../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
 type AlarmPageRouteProp = RouteProp<RootStackParamList, 'AlarmPage'>;
 
-export default function AlarmPage({
-  route,
-}: {
-  route: AlarmPageRouteProp;
-}) {
+export default function AlarmPage({ route }: { route: AlarmPageRouteProp }) {
   const { taskSuccess } = route.params;
   const navigation = useNavigation<Nav>();
   const onClickBack = () => {
@@ -29,7 +26,7 @@ export default function AlarmPage({
   const taskDate = '2025.12.08';
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.headerZone}>
         <Pressable onPress={onClickBack}>
           <Image source={IMAGES.arrowLeft} />
@@ -47,7 +44,7 @@ export default function AlarmPage({
               </Text>
               <Image
                 source={
-                  index != 0 || taskSuccess ? IMAGES.checkGreen : IMAGES.check
+                  index !== 0 || taskSuccess ? IMAGES.checkGreen : IMAGES.check
                 }
               />
             </View>
@@ -57,7 +54,7 @@ export default function AlarmPage({
           </View>
         ))}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

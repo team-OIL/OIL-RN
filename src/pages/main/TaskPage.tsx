@@ -10,6 +10,7 @@ import TaskModel from '../../components/model/taskModel';
 import { completedListApi } from '../../api/Mission/completedList';
 import { missionDetailApi } from '../../api/Mission/missionDetail';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
 type taskData = {
@@ -75,7 +76,7 @@ export default function TaskPage({ taskData }: TaskPageProps) {
   const completedTaskList = completedList.slice(0, 5);
 
   return (
-    <View style={style.safeArea}>
+    <SafeAreaView style={style.safeArea} edges={['top', 'left', 'right']}>
       <View style={style.container}>
         <View style={style.header}>
           <View style={style.statusBarPlaceholder}>
@@ -134,7 +135,7 @@ export default function TaskPage({ taskData }: TaskPageProps) {
           onClose={closeModal}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 

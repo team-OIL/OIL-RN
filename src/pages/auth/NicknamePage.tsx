@@ -47,7 +47,7 @@ function NicknamePage({ route }: { route: SignUpRouteProp }) {
     } catch (e) {
       console.log('에러 발생', e);
     }
-  }, [nickname]);
+  }, [TastTime, email, isAgreedToReceive, navigation, nickname, password]);
 
   const canGoNext = nickname;
 

@@ -1,4 +1,5 @@
-import { View, StyleSheet, Text, Alert } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Star from '../../components/Star';
 import Button from '../../components/button/button';
 import MaskedTitle from '../../components/Masked/MaskedTitle';
@@ -18,7 +19,7 @@ function SignInComplete({ route }: { route: SignInCompleteRouteProp }) {
     navigation.navigate('BottomTabNavigator', {});
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.titleZone}>
         <MaskedTitle title="반갑습니다" sudText={`${nickname}님`} />
       </View>
@@ -31,7 +32,7 @@ function SignInComplete({ route }: { route: SignInCompleteRouteProp }) {
           }}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
