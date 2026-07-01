@@ -68,7 +68,7 @@ const TaskModel: React.FC<TaskModelProps> = ({
             <View style={styles.card}>
               <View style={styles.imageWrapper}>
                 <Image
-                  source={recordImageUrl ? { uri: recordImageUrl } : null}
+                  source={recordImageUrl ? { uri: recordImageUrl } : undefined}
                   style={styles.image}
                   resizeMode="cover"
                 />

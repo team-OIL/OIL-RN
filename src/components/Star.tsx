@@ -41,24 +41,24 @@ const Star = ({
       duration: 1000,
       easing: Easing.out(Easing.ease),
     });
-  }, [taskStage]);
+  }, [taskStage, translateY]);
 
   useEffect(() => {
-    if (taskStage === 'progress') {
+    if (taskStage === 'progress' && taskData?.durationTime) {
       translateY.value = withTiming(
         -CIRCLE_SIZE,
         {
-          duration: second * taskData?.durationTime,
+          duration: second * taskData.durationTime,
           easing: Easing.out(Easing.ease),
         },
-        finished => {
+        (finished?: boolean) => {
           if (finished && setTaskStage) {
             runOnJS(setTaskStage)('done');
           }
         },
       );
     }
-  }, [taskStage]);
+  }, [second, setTaskStage, taskData?.durationTime, taskStage, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],

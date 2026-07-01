@@ -8,7 +8,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import type { RootStackParamList } from '../../../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useRoute, RouteProp } from '@react-navigation/native';
 import useTimer from '../../hooks/useTimer';
 import { TaskStage } from '../../../types/TaskStage';
 import ImgModel from '../../components/model/imageModel';
@@ -18,9 +17,9 @@ import { missionDetailApi } from '../../api/Mission/missionDetail';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import TaskModel from '../../components/model/taskModel';
 import { completedListApi } from '../../api/Mission/completedList';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
-type MainPageRouteProp = RouteProp<RootStackParamList, 'BottomTabNavigator'>;
 type Advice = {
   author: string;
   authorProfile: string;
@@ -30,16 +29,15 @@ interface TaskData {
   userMissionId: number;
   missionContent: string;
   durationTime: number;
+  completed: boolean;
 }
 type TaskPageProps = {
-  taskData: TaskData;
-  taskSuccess: boolean;
+  taskData: TaskData | null;
 };
 
 const MainPage = ({ taskData }: TaskPageProps) => {
-  const { second, setSecond, isPaused, setIsPaused, reset } = useTimer(300);
-  const route = useRoute<MainPageRouteProp>();
-  const { taskSuccess } = route.params || {};
+  const { second, setSecond, isPaused, setIsPaused } = useTimer(300);
+  const taskSuccess = taskData?.completed ?? true;
   const navigation = useNavigation<Nav>();
   const [taskStage, setTaskStage] = useState<TaskStage>('idle');
 
@@ -180,7 +178,7 @@ const MainPage = ({ taskData }: TaskPageProps) => {
 
   let content;
 
-  if (taskStage === 'done') {
+  if (taskStage === 'done' && taskData) {
     content = (
       <>
         <View style={styles.DoneContent}>
@@ -272,7 +270,6 @@ const MainPage = ({ taskData }: TaskPageProps) => {
             taskStage={taskStage}
             setTaskStage={setTaskStage}
             second={second}
-            taskData={taskData}
           />
 
           <View style={styles.buttonZone}>
@@ -359,9 +356,9 @@ const MainPage = ({ taskData }: TaskPageProps) => {
   }
 
   return (
-    <View style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       <View style={styles.container}>{content}</View>
-    </View>
+    </SafeAreaView>
   );
 };
 

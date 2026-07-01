@@ -8,6 +8,13 @@ import { updateAlarmSetting } from '../../api/alarm/updateAlarmSetting';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useNavigation } from '@react-navigation/native';
 import { deleteTokenApi } from '../../api/pushtoken/deleteToken';
+import { setTokenApi } from '../../api/pushtoken/setToken';
+import {
+  disablePushToken,
+  getFcmToken,
+} from '../../services/pushToken.service';
+
+const DEFAULT_ALARM_TIME = '19:35';
 
 function ChangeAlarmPage() {
   const navigation = useNavigation();
@@ -26,11 +33,11 @@ function ChangeAlarmPage() {
     if (!baseTastTime) return;
 
     const [h, m] = baseTastTime.split(':');
-    const hourNum = Number(h);
+    const parsedHour = Number(h);
 
-    const isPM = hourNum >= 12;
+    const isPM = parsedHour >= 12;
     const convertedHour =
-      hourNum === 0 ? 12 : hourNum > 12 ? hourNum - 12 : hourNum;
+      parsedHour === 0 ? 12 : parsedHour > 12 ? parsedHour - 12 : parsedHour;
 
     setAmpm(isPM ? '오후' : '오전');
     setHour(String(convertedHour).padStart(2, '0'));
@@ -41,8 +48,8 @@ function ChangeAlarmPage() {
     const loadAccessToken = async () => {
       const auth = await EncryptedStorage.getItem('auth');
       if (!auth) return;
-      const { accessToken } = JSON.parse(auth);
-      setAccessToken(accessToken);
+      const { accessToken: storedAccessToken } = JSON.parse(auth);
+      setAccessToken(storedAccessToken);
     };
     loadAccessToken();
   }, []);
@@ -50,12 +57,12 @@ function ChangeAlarmPage() {
   useEffect(() => {
     const loadAgreement = async () => {
       const value = await EncryptedStorage.getItem('alarm');
-      const { isAgreedToReceive, TastTime } = value
-        ? JSON.parse(value)
-        : {
-            isAgreedToReceive: isChangeAgreedToReceive,
-            TastTime: ChangeTastTime,
-          };
+      const savedAlarm = value ? JSON.parse(value) : {};
+      const isAgreedToReceive =
+        savedAlarm.isAgreedToReceive ??
+        savedAlarm.isChangeAgreedToReceive ??
+        false;
+      const TastTime = savedAlarm.TastTime ?? DEFAULT_ALARM_TIME;
       setIsChangeAgreedToReceive(isAgreedToReceive);
       setBaseTastTime(TastTime);
     };
@@ -63,20 +70,8 @@ function ChangeAlarmPage() {
   }, []);
 
   // 알림 수신 동의 토글
-  const toggleSwitch = async () => {
-    const newState = !isChangeAgreedToReceive;
-    setIsChangeAgreedToReceive(newState);
-
-    try {
-      const alarmData = {
-        isAgreedToReceive: newState,
-        TastTime: ChangeTastTime,
-      };
-      await EncryptedStorage.setItem('alarm', JSON.stringify(alarmData));
-    } catch (error) {
-      console.error('Failed to save consent preference:', error);
-      setIsChangeAgreedToReceive(!newState);
-    }
+  const toggleSwitch = () => {
+    setIsChangeAgreedToReceive(current => !current);
   };
 
   const onClickChangeAlarm = async () => {
@@ -87,53 +82,51 @@ function ChangeAlarmPage() {
       );
       return;
     }
-    try {
-      await onChangeTime();
-      await onChangeAlarmSetting();
-      await deleteTokenApi({ accessToken });
-    } catch (e) {
-      console.log('Error in onClickChangeAlarm:', e);
-    }
-  };
 
-  const onChangeTime = async () => {
     try {
+      let deviceToken: string | null = null;
+
+      if (isChangeAgreedToReceive) {
+        deviceToken = await getFcmToken(true);
+        if (!deviceToken) {
+          Alert.alert(
+            '알림 권한 필요',
+            '푸시 알림을 사용하려면 기기 설정에서 OIL의 알림 권한을 허용해주세요.',
+          );
+          return;
+        }
+      }
+
       await updateMissionReceiveTime({
         accessToken,
         MissionTime: ChangeTastTime,
       });
-      const alarmData = {
-        isChangeAgreedToReceive,
-        TastTime: ChangeTastTime,
-      };
-      await EncryptedStorage.setItem('alarm', JSON.stringify(alarmData));
-      Alert.alert('알림', '알림 시간이 변경되었습니다.');
-      navigation.goBack();
-    } catch (e) {
-      console.log('에러 발생', e);
-      Alert.alert('오류', '알림 시간 변경에 실패했습니다. 다시 시도해주세요.');
-    }
-  };
-
-  const onChangeAlarmSetting = async () => {
-    try {
       await updateAlarmSetting({
         accessToken,
         alarmEnabled: isChangeAgreedToReceive,
       });
+
       const alarmData = {
-        isChangeAgreedToReceive,
+        isAgreedToReceive: isChangeAgreedToReceive,
         TastTime: ChangeTastTime,
       };
       await EncryptedStorage.setItem('alarm', JSON.stringify(alarmData));
-      Alert.alert('알림', '푸시 알람 수신 설정이 변경되었습니다.');
+
+      if (deviceToken) {
+        await setTokenApi({ accessToken, deviceToken });
+      } else {
+        try {
+          await deleteTokenApi({ accessToken });
+        } finally {
+          await disablePushToken();
+        }
+      }
+
+      Alert.alert('알림', '알림 설정이 변경되었습니다.');
       navigation.goBack();
     } catch (e) {
-      console.log('에러 발생', e);
-      Alert.alert(
-        '오류',
-        '푸시 알람 수신 설정 변경에 실패했습니다. 다시 시도해주세요.',
-      );
+      console.error('Failed to update alarm settings:', e);
+      Alert.alert('오류', '알림 설정 변경에 실패했습니다. 다시 시도해주세요.');
     }
   };
 
@@ -154,6 +147,7 @@ function ChangeAlarmPage() {
             <Switch
               trackColor={{ false: '#e0e0e0', true: '#a0a0a0' }}
               thumbColor={isChangeAgreedToReceive ? '#363636' : '#f4f3f4'}
+              ios_backgroundColor="#e0e0e0"
               onValueChange={toggleSwitch}
               value={isChangeAgreedToReceive}
             />
@@ -177,7 +171,13 @@ function ChangeAlarmPage() {
           >
             푸시 알림 수신에 동의하십니까?
           </Text>
-          <View style={styles.timePickerContainer}>
+          <View
+            pointerEvents={isChangeAgreedToReceive ? 'auto' : 'none'}
+            style={[
+              styles.timePickerContainer,
+              !isChangeAgreedToReceive && styles.disabledContainer,
+            ]}
+          >
             <TimePickerScreen
               ampm={ampm}
               hour={hour}

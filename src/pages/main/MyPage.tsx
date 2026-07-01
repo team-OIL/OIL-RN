@@ -9,6 +9,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { logoutApi } from '../../api/auth/LogoutApi';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { adviceApi } from '../../api/advice/adviceApi';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { disablePushToken } from '../../services/pushToken.service';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AlarmPage'>;
 type Advice = {
@@ -23,17 +25,24 @@ export default function MyPage() {
   const [name, setName] = useState('');
 
   const logout = async () => {
-    try {
-      const auth = await EncryptedStorage.getItem('auth');
-      if (!auth) return;
+    const auth = await EncryptedStorage.getItem('auth');
+    if (!auth) return;
 
-      const { accessToken } = JSON.parse(auth);
+    const { accessToken } = JSON.parse(auth);
+
+    try {
       await logoutApi(accessToken);
-      Alert.alert('알림', '로그아웃 되었습니다.');
-      await EncryptedStorage.removeItem('auth');
-      navigation.navigate('SignIn', {});
     } catch (error) {
-      console.log('서버 로그아웃 실패, 로컬 삭제 진행');
+      console.warn('Server logout failed; clearing local session.', error);
+    } finally {
+      try {
+        await disablePushToken();
+      } catch (error) {
+        console.warn('Failed to remove local push token.', error);
+      }
+      await EncryptedStorage.removeItem('auth');
+      Alert.alert('알림', '로그아웃 되었습니다.');
+      navigation.reset({ index: 0, routes: [{ name: 'SignIn' }] });
     }
   };
 
@@ -70,7 +79,7 @@ export default function MyPage() {
   };
 
   return (
-    <View style={style.safeArea}>
+    <SafeAreaView style={style.safeArea} edges={['top', 'left', 'right']}>
       <View style={style.container}>
         <View style={style.header}>
           <View style={style.statusBarPlaceholder}>
@@ -101,7 +110,7 @@ export default function MyPage() {
           <Button label="로그아웃" onPress={logout} />
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

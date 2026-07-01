@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, Switch, Alert } from 'react-native';
+import { View, Text, StyleSheet, Switch } from 'react-native';
 import DismissKeyboardView from '../../components/DismissKeyboardView';
 import TimePickerScreen from '../../components/Time/TimePickerScreen';
 import Button from '../../components/button/button';
@@ -36,7 +36,7 @@ function AlarmSettingsPage({ route }: { route: SignUpRouteProp }) {
       isAgreedToReceive,
       TastTime,
     });
-  }, [isAgreedToReceive]);
+  }, [TastTime, email, isAgreedToReceive, navigation, password]);
 
   return (
     <DismissKeyboardView style={styles.fullScreen}>
@@ -55,6 +55,7 @@ function AlarmSettingsPage({ route }: { route: SignUpRouteProp }) {
             <Switch
               trackColor={{ false: '#e0e0e0', true: '#a0a0a0' }}
               thumbColor={isAgreedToReceive ? '#363636' : '#f4f3f4'}
+              ios_backgroundColor="#e0e0e0"
               onValueChange={toggleSwitch}
               value={isAgreedToReceive}
             />
@@ -78,7 +79,13 @@ function AlarmSettingsPage({ route }: { route: SignUpRouteProp }) {
           >
             푸시 알림 수신에 동의하십니까?
           </Text>
-          <View style={styles.timePickerContainer}>
+          <View
+            pointerEvents={isAgreedToReceive ? 'auto' : 'none'}
+            style={[
+              styles.timePickerContainer,
+              !isAgreedToReceive && styles.disabledContainer,
+            ]}
+          >
             <TimePickerScreen
               ampm={ampm}
               hour={hour}

@@ -1,15 +1,19 @@
 import { navigationRef } from '../navigation/NavigationService';
 
-type PushData = {
-  type?: 'ALARM' | 'MISSION';
-  alarmId?: string;
-};
+type PushData = Record<string, unknown>;
+
+let pendingPushData: PushData | undefined;
 
 export function handlePushNavigation(data?: PushData) {
   if (!data) return;
-  if (!navigationRef.isReady()) return;
+  if (!navigationRef.isReady()) {
+    pendingPushData = data;
+    return;
+  }
 
-  switch (data.type) {
+  const pushType = typeof data.type === 'string' ? data.type : undefined;
+
+  switch (pushType) {
     case 'ALARM':
       navigationRef.navigate('BottomTabNavigator', { screen: 'Home' });
       break;
@@ -18,4 +22,10 @@ export function handlePushNavigation(data?: PushData) {
       navigationRef.navigate('BottomTabNavigator', { screen: 'Home' });
       break;
   }
+}
+
+export function flushPendingPushNavigation() {
+  const data = pendingPushData;
+  pendingPushData = undefined;
+  handlePushNavigation(data);
 }
